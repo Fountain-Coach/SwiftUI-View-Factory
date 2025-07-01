@@ -1,0 +1,20 @@
+name: Analyze Xcode Build Logs
+goal: |
+  Parse the most recent `build.log` file.
+  Detect Swift compiler errors or warnings.
+  Summarize key issues and propose follow-up actions.
+
+steps:
+  - name: Load build.log
+    run: |
+      with open("build.log") as f:
+          content = f.read()
+
+  - name: Extract and summarize diagnostics
+    run: |
+      diagnostics = extract_errors(content)
+      summarize_diagnostics(diagnostics)
+
+  - name: Propose remediation
+    run: |
+      propose_fixes(diagnostics)
