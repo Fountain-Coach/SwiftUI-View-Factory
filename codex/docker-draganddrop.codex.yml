@@ -55,3 +55,5 @@ Use existing CLI test cases (`tests/test_mockup*_flow.py`) to verify baseline be
 - SwiftUI view was generated and scaffolded
 - Codex committed the new `DragAndDropApp` folder with all relevant files
 - `pytest` passes via Docker
+setup:
+  - scripts/setup_env.sh
