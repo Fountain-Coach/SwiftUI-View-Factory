@@ -39,6 +39,26 @@ uvicorn app.main:app --reload
 ```
 Visit http://localhost:8000/docs for interactive API docs.
 
+### Styling options
+The `/factory/generate` endpoint accepts a `style` object to customize
+generated SwiftUI code. Example payload:
+
+```json
+{
+  "layout": {"type": "VStack", "children": [{"type": "Text", "text": "Hello"}]},
+  "style": {
+    "indent": 4,
+    "header_comment": false,
+    "font": "title",
+    "color": "red",
+    "spacing": 8
+  }
+}
+```
+
+`font` and `color` apply to `Text` and `Button` views while `spacing` controls
+stack spacing. All fields are optional.
+
 ### Running tests
 ```bash
 pytest

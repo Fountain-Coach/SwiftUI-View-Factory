@@ -9,7 +9,9 @@ from app.main import app
 
 def test_interpret_endpoint(monkeypatch):
     if "openai" not in sys.modules:
-        sys.modules["openai"] = types.SimpleNamespace(api_key=None, ChatCompletion=types.SimpleNamespace())
+        sys.modules["openai"] = types.SimpleNamespace(
+            api_key=None, ChatCompletion=types.SimpleNamespace()
+        )
     import openai
 
     layout_data = {
@@ -30,7 +32,9 @@ def test_interpret_endpoint(monkeypatch):
 
     client = TestClient(app)
     with Path("examples/mockup1.jpeg").open("rb") as f:
-        resp = client.post("/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")})
+        resp = client.post(
+            "/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")}
+        )
 
     assert resp.status_code == 200
     data = resp.json()

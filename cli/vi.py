@@ -55,6 +55,7 @@ def generate(obj: dict, layout_json: str) -> None:
     server: str = obj.get("server", BASE_URL)
     try:
         data = json.loads(Path(layout_json).read_text())
+        payload = {"layout": data}
     except FileNotFoundError:
         click.echo(f"File not found: {layout_json}", err=True)
         raise SystemExit(1)
@@ -63,7 +64,7 @@ def generate(obj: dict, layout_json: str) -> None:
         raise SystemExit(1)
 
     try:
-        resp = requests.post(f"{server}/factory/generate", json=data, timeout=30)
+        resp = requests.post(f"{server}/factory/generate", json=payload, timeout=30)
         resp.raise_for_status()
         swift = resp.json().get("swift", "")
         Path("GeneratedView.swift").write_text(swift)

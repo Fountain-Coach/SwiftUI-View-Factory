@@ -65,6 +65,15 @@ paths:
                     header_comment:
                       type: boolean
                       default: true
+                    font:
+                      type: string
+                      description: Font applied to Text and Button views
+                    color:
+                      type: string
+                      description: Foreground color name
+                    spacing:
+                      type: integer
+                      description: Spacing value for stacks
                 backend_hooks:
                   type: boolean
                   default: false
