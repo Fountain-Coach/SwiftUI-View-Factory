@@ -3,7 +3,7 @@ import Foundation
 import AppKit
 
 final class API {
-    static let shared = API()
+    @MainActor static let shared = API()
 
     let baseURL: URL
     private let session: URLSession
