@@ -88,6 +88,23 @@ def generate_swift(layout: LayoutNode) -> str:
             for child in node.children or []:
                 out.extend(render(child, depth + 1))
             out.append(f"{space}}}")
+        elif t == "NavigationStack":
+            out.append(f"{space}NavigationStack {{")
+            for child in node.children or []:
+                out.extend(render(child, depth + 1))
+            out.append(f"{space}}}")
+        elif t == "List":
+            out.append(f"{space}List {{")
+            for child in node.children or []:
+                out.extend(render(child, depth + 1))
+            out.append(f"{space}}}")
+        elif t == "Section":
+            header = f'header: Text("{escape(node.text)}")' if node.text else ""
+            prefix = f"Section({header})" if header else "Section"
+            out.append(f"{space}{prefix} {{")
+            for child in node.children or []:
+                out.extend(render(child, depth + 1))
+            out.append(f"{space}}}")
         elif t == "Form":
             out.append(f"{space}Form {{")
             for child in node.children or []:
