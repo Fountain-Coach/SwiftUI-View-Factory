@@ -149,7 +149,15 @@ components:
       properties:
         id:
           type: string
-          description: Optional unique identifier for node
+          description: A unique node identifier
+        role:
+          type: string
+          description: Semantic role (e.g., "header", "submit")
+          nullable: true
+        tag:
+          type: string
+          description: Developer hint or custom logic
+          nullable: true
         type:
           type: string
           description: SwiftUI component type
