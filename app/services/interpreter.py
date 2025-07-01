@@ -9,6 +9,7 @@ import os
 # Ensure API key is loaded from environment if available
 openai.api_key = os.getenv("OPENAI_API_KEY", openai.api_key)
 
+
 async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
     """Interpret an uploaded UI mockup image into a layout tree.
 
@@ -48,7 +49,9 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
                     {"type": "text", "text": "Convert this image into a layout tree."},
                     {
                         "type": "image_url",
-                        "image_url": {"url": f"data:{file.content_type};base64,{encoded}"},
+                        "image_url": {
+                            "url": f"data:{file.content_type};base64,{encoded}"
+                        },
                     },
                 ],
             },

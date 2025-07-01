@@ -10,6 +10,7 @@ import requests
 
 BASE_URL = "http://localhost:8000/api/v1"
 
+
 @click.group()
 @click.option(
     "--server",
@@ -21,6 +22,7 @@ BASE_URL = "http://localhost:8000/api/v1"
 def cli(ctx: click.Context, server: str) -> None:
     """Parent CLI group setting the API server base URL."""
     ctx.obj = {"server": server.rstrip("/")}
+
 
 @cli.command()
 @click.argument("image")
@@ -42,6 +44,7 @@ def interpret(obj: dict, image: str) -> None:
     except requests.RequestException as exc:
         click.echo(f"Request failed: {exc}", err=True)
         raise SystemExit(1)
+
 
 @cli.command()
 @click.argument("layout_json")
@@ -68,6 +71,7 @@ def generate(obj: dict, layout_json: str) -> None:
     except requests.RequestException as exc:
         click.echo(f"Request failed: {exc}", err=True)
         raise SystemExit(1)
+
 
 @cli.command(name="test")
 @click.argument("swift_file")
@@ -97,5 +101,6 @@ def test_cmd(obj: dict, swift_file: str) -> None:
         click.echo(f"Request failed: {exc}", err=True)
         raise SystemExit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

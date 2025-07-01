@@ -4,6 +4,7 @@ from app.services.build import test_build
 
 router = APIRouter()
 
+
 class BuildRequest(BaseModel):
     swift: str
     output_binary: bool = False
