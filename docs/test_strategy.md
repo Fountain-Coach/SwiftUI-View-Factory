@@ -10,13 +10,25 @@ This repository includes Swift packages that build macOS and iOS user interfaces
 
 ## Running Tests
 
-Use `xcodebuild` directly to build the `DragAndDropApp` package. An example invocation:
+Use `xcodebuild` directly to build the demo packages. Example invocations:
 
 ```bash
 xcodebuild \
   -scheme DragAndDropApp \
   -configuration Debug \
   -destination 'platform=macOS' \
+  build 2>&1 | tee build.log
+
+xcodebuild \
+  -scheme iOSDemoApp \
+  -configuration Debug \
+  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  build 2>&1 | tee build.log
+
+xcodebuild \
+  -scheme VisionDemoApp \
+  -configuration Debug \
+  -destination 'platform=visionOS Simulator,name=Apple Vision Pro' \
   build 2>&1 | tee build.log
 ```
 
@@ -30,6 +42,8 @@ For convenience, create a small script (e.g. `scripts/build_app.sh`):
 #!/bin/bash
 set -euo pipefail
 xcodebuild -scheme DragAndDropApp -configuration Debug -destination 'platform=macOS' build 2>&1 | tee build.log
+xcodebuild -scheme iOSDemoApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee build.log
+xcodebuild -scheme VisionDemoApp -configuration Debug -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build 2>&1 | tee build.log
 ```
 
 Run the script locally or within your CI pipeline. The output file `build.log` will contain compiler diagnostics. Any build failure stops the script due to `set -e`.

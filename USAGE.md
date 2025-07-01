@@ -10,6 +10,15 @@ python cli/vi.py generate examples/mockup1.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
 
+The `generate` command accepts additional flags to customize the output:
+
+```bash
+python cli/vi.py generate examples/mockup1.layout.json \
+  --name HomeView \
+  --font title --color blue --spacing 8 \
+  --indent 4 --no-header --backend-hooks
+```
+
 ## FastAPI
 Launch the API locally with Uvicorn:
 

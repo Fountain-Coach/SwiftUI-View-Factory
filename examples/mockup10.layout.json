@@ -1,0 +1,11 @@
+{
+  "type": "NavigationStack",
+  "children": [
+    {
+      "type": "List",
+      "children": [
+        {"type": "Text", "text": "Row1"}
+      ]
+    }
+  ]
+}

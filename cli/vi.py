@@ -48,14 +48,49 @@ def interpret(obj: dict, image: str) -> None:
 
 @cli.command()
 @click.argument("layout_json")
+@click.option("--name", help="Name for the generated SwiftUI view")
+@click.option("--backend-hooks", is_flag=True, help="Insert onAppear hooks")
+@click.option("--font", help="Default font to apply")
+@click.option("--color", help="Default foreground color")
+@click.option("--spacing", type=int, help="Spacing for stack views")
+@click.option("--indent", type=int, help="Indentation width")
+@click.option("--no-header", is_flag=True, help="Omit header comment")
 @click.pass_obj
-def generate(obj: dict, layout_json: str) -> None:
+def generate(
+    obj: dict,
+    layout_json: str,
+    name: Optional[str],
+    backend_hooks: bool,
+    font: Optional[str],
+    color: Optional[str],
+    spacing: Optional[int],
+    indent: Optional[int],
+    no_header: bool,
+) -> None:
     """Load ``LAYOUT_JSON`` and generate SwiftUI code via the API."""
 
     server: str = obj.get("server", BASE_URL)
     try:
         data = json.loads(Path(layout_json).read_text())
         payload = {"layout": data}
+        if name:
+            payload["name"] = name
+
+        style: dict = {}
+        if font:
+            style["font"] = font
+        if color:
+            style["color"] = color
+        if spacing is not None:
+            style["spacing"] = spacing
+        if indent is not None:
+            style["indent"] = indent
+        if no_header:
+            style["header_comment"] = False
+        if style:
+            payload["style"] = style
+        if backend_hooks:
+            payload["backend_hooks"] = True
     except FileNotFoundError:
         click.echo(f"File not found: {layout_json}", err=True)
         raise SystemExit(1)
