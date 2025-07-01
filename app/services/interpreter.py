@@ -1,16 +1,15 @@
 # service/interpreter.py
 from fastapi import UploadFile
-from fastapi.concurrency import run_in_threadpool
-from app.models.layout import LayoutNode
+from app.models.layout import LayoutNode, LayoutInterpretationResponse
 import openai
 import base64
 import json
-from typing import Any, Dict
+import os
 
 # Ensure API key is loaded from environment if available
-openai.api_key = openai.api_key
+openai.api_key = os.getenv("OPENAI_API_KEY", openai.api_key)
 
-async def interpret_image(file: UploadFile) -> Dict[str, Any]:
+async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
     """Interpret an uploaded UI mockup image into a layout tree.
 
     The function attempts to use GPT-4 via the OpenAI API to analyse the
@@ -20,14 +19,14 @@ async def interpret_image(file: UploadFile) -> Dict[str, Any]:
     returned instead.
     """
 
-    fallback = {
-        "structured": {
-            "type": "VStack",
-            "children": [{"type": "Text", "text": "Hello"}],
-        },
-        "description": "Simple VStack with Hello text",
-        "version": "layout-v1",
-    }
+    fallback = LayoutInterpretationResponse(
+        structured=LayoutNode(
+            type="VStack",
+            children=[LayoutNode(type="Text", text="Hello")],
+        ),
+        description="Simple VStack with Hello text",
+        version="layout-v1",
+    )
 
     try:
         # Read and base64 encode the uploaded image for GPT-4 vision models
@@ -38,20 +37,15 @@ async def interpret_image(file: UploadFile) -> Dict[str, Any]:
             {
                 "role": "system",
                 "content": (
-                    "You are a service that converts UI screenshots into a JSON layout\n"
-                    "tree. Respond only with JSON that conforms to the following\n"
-                    "LayoutInterpretationResponse schema:\n"
-                    "{structured: LayoutNode, description?: string, version: string}.\n"
-                    "LayoutNode fields: {type, text?, children?}."
+                    "You are a service that converts UI screenshots into a JSON layout tree "
+                    "matching the LayoutNode schema. Respond only with JSON conforming to "
+                    "LayoutInterpretationResponse {structured: LayoutNode, description?: string, version: string}."
                 ),
             },
             {
                 "role": "user",
                 "content": [
-                    {
-                        "type": "text",
-                        "text": "Interpret this UI mockup into a layout tree.",
-                    },
+                    {"type": "text", "text": "Convert this image into a layout tree."},
                     {
                         "type": "image_url",
                         "image_url": {"url": f"data:{file.content_type};base64,{encoded}"},
@@ -62,7 +56,7 @@ async def interpret_image(file: UploadFile) -> Dict[str, Any]:
 
         # Call OpenAI asynchronously; fall back on error
         response = await openai.ChatCompletion.acreate(
-            model="gpt-4-vision-preview",
+            model="gpt-4o",
             messages=messages,
             max_tokens=500,
         )
@@ -72,13 +66,15 @@ async def interpret_image(file: UploadFile) -> Dict[str, Any]:
         # The model should return JSON. Attempt to parse it.
         data = json.loads(content)
 
-        # Validate basic structure using LayoutNode
-        LayoutNode.parse_obj(data.get("structured", {}))
+        layout = LayoutNode.parse_obj(data.get("structured", {}))
+        description = data.get("description")
+        version = data.get("version", "layout-v1")
 
-        # Ensure mandatory fields
-        data.setdefault("version", "layout-v1")
-
-        return data
+        return LayoutInterpretationResponse(
+            structured=layout,
+            description=description,
+            version=version,
+        )
 
     except Exception:
         # If anything goes wrong (no API key, parse error, etc.) return fallback
