@@ -1,0 +1,5 @@
+{
+  "type": "TextField",
+  "text": "Email",
+  "id": "emailInput"
+}

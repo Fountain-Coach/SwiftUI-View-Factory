@@ -171,6 +171,7 @@ components:
             - ScrollView
             - ZStack
             - Conditional
+            - TextField
         text:
           type: string
           nullable: true

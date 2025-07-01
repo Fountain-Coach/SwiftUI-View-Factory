@@ -74,3 +74,10 @@ def test_zstack_node():
     assert "ZStack {" in swift
     assert 'Image("background")' in swift
     assert 'Text("Overlay")' in swift
+
+
+def test_textfield_state_binding():
+    layout = LayoutNode(type="TextField", text="Email", id="emailInput")
+    swift = generate_swift(layout)
+    assert '@State private var emailInput: String = ""' in swift
+    assert 'TextField("Email", text: $emailInput)' in swift

@@ -12,6 +12,7 @@ ComponentType = Literal[
     "ScrollView",
     "ZStack",
     "Conditional",
+    "TextField",
 ]
 
 
