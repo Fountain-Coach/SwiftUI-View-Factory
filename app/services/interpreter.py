@@ -1,6 +1,6 @@
 # service/interpreter.py
 from fastapi import UploadFile
-from app.models.layout import LayoutNode, LayoutInterpretationResponse
+from app.models import LayoutNode, LayoutInterpretationResponse, ErrorResponse
 import openai
 import base64
 import json
@@ -13,7 +13,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
+async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | ErrorResponse:
     """Interpret an uploaded UI mockup image into a layout tree.
 
     The function attempts to use GPT-4 via the OpenAI API to analyse the
@@ -60,15 +60,21 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
             },
         ]
 
-        # Call OpenAI asynchronously; fall back on error
+        # Call OpenAI asynchronously; surface errors if any
         response = await openai.ChatCompletion.acreate(
             model="gpt-4o",
             messages=messages,
             max_tokens=500,
         )
-
         content = response["choices"][0]["message"]["content"]
+    except Exception as exc:
+        return ErrorResponse(
+            code="openai_error",
+            message="OpenAI API error",
+            detail=str(exc),
+        )
 
+    try:
         # The model should return JSON. Attempt to parse it.
         data = json.loads(content)
 
@@ -82,6 +88,12 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:
             version=version,
         )
 
+    except json.JSONDecodeError as exc:
+        return ErrorResponse(
+            code="invalid_response",
+            message="Failed to parse response from OpenAI",
+            detail=str(exc),
+        )
     except Exception:
         # If anything goes wrong (no API key, parse error, etc.) return fallback
         return fallback
