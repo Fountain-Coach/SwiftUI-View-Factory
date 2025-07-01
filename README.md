@@ -21,6 +21,8 @@ SwiftUI View Factory converts UI mockups or structured layout trees into product
 - **mockup6** – single `TextField` bound to a state variable
 - **mockup7** – grouped input fields inside a `Form`
 - **mockup8** – demonstrates backend hooks via `onAppear`
+- **mockup9** – `List` with three rows
+- **mockup10** – `NavigationStack` linking to a detail view
 
 ## 🚀 Getting Started
 ### CLI
