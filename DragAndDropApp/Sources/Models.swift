@@ -1,7 +1,7 @@
 /// Codable models corresponding to the View Factory API.
 import Foundation
 
-struct LayoutNode: Codable {
+final class LayoutNode: Codable {
     var id: String?
     var role: String?
     var tag: String?

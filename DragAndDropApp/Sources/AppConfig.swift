@@ -2,7 +2,7 @@
 import Foundation
 
 final class AppConfig {
-    static let shared = AppConfig()
+    @MainActor static let shared = AppConfig()
 
     /// Base URL for the backend API.
     let baseURL: URL
