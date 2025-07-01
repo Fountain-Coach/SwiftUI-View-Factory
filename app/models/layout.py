@@ -27,36 +27,39 @@ class LayoutNode(BaseModel):
     text: Optional[str] = None
     # Container types like ``VStack``, ``ZStack`` or ``Form`` may hold multiple child
     # nodes.  Non-container elements generally omit this field.
-    children: Optional[List['LayoutNode']] = None
+    children: Optional[List["LayoutNode"]] = None
     # Conditional layout support
     condition: Optional[str] = None
-    then: Optional['LayoutNode'] = None
-    else_: Optional['LayoutNode'] = None
+    then: Optional["LayoutNode"] = None
+    else_: Optional["LayoutNode"] = None
 
     def __init__(self, **data):
         # Map reserved keyword 'else' to 'else_'
-        if 'else' in data and 'else_' not in data:
-            data['else_'] = data.pop('else')
+        if "else" in data and "else_" not in data:
+            data["else_"] = data.pop("else")
 
-        children = data.get('children')
+        children = data.get("children")
         if isinstance(children, list):
-            data['children'] = [c if isinstance(c, LayoutNode) else LayoutNode(**c) for c in children]
+            data["children"] = [
+                c if isinstance(c, LayoutNode) else LayoutNode(**c) for c in children
+            ]
 
-        then = data.get('then')
+        then = data.get("then")
         if isinstance(then, dict):
-            data['then'] = LayoutNode(**then)
+            data["then"] = LayoutNode(**then)
 
-        else_branch = data.get('else_')
+        else_branch = data.get("else_")
         if isinstance(else_branch, dict):
-            data['else_'] = LayoutNode(**else_branch)
+            data["else_"] = LayoutNode(**else_branch)
 
         super().__init__(**data)
 
     def dict(self, *args, **kwargs):
         data = super().dict(*args, **kwargs)
-        if 'else_' in data:
-            data['else'] = data.pop('else_')
+        if "else_" in data:
+            data["else"] = data.pop("else_")
         return data
+
 
 LayoutNode.update_forward_refs()
 
@@ -67,4 +70,3 @@ class LayoutInterpretationResponse(BaseModel):
     structured: LayoutNode
     description: Optional[str] = None
     version: str = "layout-v1"
-

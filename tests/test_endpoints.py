@@ -55,12 +55,19 @@ def test_interpret_mockup1(monkeypatch):
 
     client = TestClient(app)
     with image_path.open("rb") as f:
-        response = client.post("/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")})
+        response = client.post(
+            "/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")}
+        )
 
     assert response.status_code == 200
     data = response.json()
     assert data["structured"]["type"] == "VStack"
     children = data["structured"].get("children", [])
 
-    assert any(child["type"] == "Text" and child.get("text") == "Welcome" for child in children)
-    assert any(child["type"] == "Button" and child.get("text") == "Get Started" for child in children)
+    assert any(
+        child["type"] == "Text" and child.get("text") == "Welcome" for child in children
+    )
+    assert any(
+        child["type"] == "Button" and child.get("text") == "Get Started"
+        for child in children
+    )

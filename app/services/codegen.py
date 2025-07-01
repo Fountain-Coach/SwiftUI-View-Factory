@@ -57,12 +57,12 @@ def generate_swift(layout: LayoutNode) -> str:
     collect_state_vars(layout)
 
     for var in state_vars:
-        lines.append(f"{indent_unit}@State private var {var}: String = \"\"")
+        lines.append(f'{indent_unit}@State private var {var}: String = ""')
 
     lines.append(f"{indent_unit}var body: some View {{")
 
     def escape(text: str) -> str:
-        return text.replace("\"", "\\\"")
+        return text.replace('"', '\\"')
 
     def render(node: LayoutNode, depth: int) -> List[str]:
         space = indent_unit * depth
@@ -120,7 +120,7 @@ def generate_swift(layout: LayoutNode) -> str:
             if node.then:
                 out.extend(render(node.then, depth + 1))
             out.append(f"{space}}} else {{")
-            if getattr(node, 'else_', None):
+            if getattr(node, "else_", None):
                 out.extend(render(node.else_, depth + 1))
             out.append(f"{space}}}")
         else:

@@ -12,7 +12,7 @@ def test_generate_swift_simple():
     lines = swift.splitlines()
     for line in lines:
         if 'Text("Hello")' in line:
-            assert line.startswith(' ' * 4)  # two indentation levels => 4 spaces
+            assert line.startswith(" " * 4)  # two indentation levels => 4 spaces
             break
     else:
         assert False, "Text line not found"
@@ -58,7 +58,7 @@ def test_conditional_node():
     swift = generate_swift(layout)
     assert "if flag {" in swift
     assert 'Text("Yes")' in swift
-    assert '} else {' in swift
+    assert "} else {" in swift
     assert 'Text("No")' in swift
 
 

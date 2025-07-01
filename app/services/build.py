@@ -8,7 +8,9 @@ import tempfile
 from typing import Tuple, Union
 
 
-def test_build(swift: str, output_binary: bool = False) -> Union[Tuple[bool, str], Tuple[bool, str, str]]:
+def test_build(
+    swift: str, output_binary: bool = False
+) -> Union[Tuple[bool, str], Tuple[bool, str, str]]:
     """Compile Swift source code using ``swiftc``.
 
     Parameters
@@ -67,6 +69,7 @@ def test_build(swift: str, output_binary: bool = False) -> Union[Tuple[bool, str
         return success, log, bin_path
 
     return success, log
+
 
 # Prevent pytest from treating this function as a test case when imported.
 test_build.__test__ = False
