@@ -179,6 +179,9 @@ components:
           items:
             $ref: '#/components/schemas/LayoutNode'
           nullable: true
+          description: >
+            Child layout nodes rendered inside container views. Multiple entries
+            are typically used for ``VStack``, ``HStack`` or ``ZStack`` groups.
         condition:
           type: string
           description: Condition expression controlling the branch
