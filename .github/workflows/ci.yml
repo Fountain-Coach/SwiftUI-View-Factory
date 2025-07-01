@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Lint with black
+        run: black --check .
+        continue-on-error: true
+      - name: Verify example pairs
+        run: |
+          python - <<'PY'
+          import os, glob, sys
+          missing=[]
+          for layout in glob.glob('examples/*.layout.json'):
+              base=layout[:-12]
+              if not (os.path.exists(base+'.swift') and os.path.exists(base+'.readme.md')):
+                  missing.append(os.path.basename(base))
+          if missing:
+              print('Missing .swift or .readme.md for:', ', '.join(missing))
+              sys.exit(1)
+          PY
+      - name: Run pytest
+        run: pytest -vv
+      - name: Validate OpenAPI
+        run: |
+          python - <<'PY'
+          from fastapi.testclient import TestClient
+          from app.main import app
+          client=TestClient(app)
+          resp=client.get('/openapi.json')
+          assert resp.status_code==200
+          assert 'openapi' in resp.json()
+          PY
+      - name: CLI smoke test
+        run: |
+          echo '{}' > dummy.json
+          echo 'print("hi")' > dummy.swift
+          touch dummy.png
+          python cli/vi.py generate dummy.json --server http://localhost:9 || true
+          python cli/vi.py test dummy.swift --server http://localhost:9 || true
+          python cli/vi.py interpret dummy.png --server http://localhost:9 || true
+
