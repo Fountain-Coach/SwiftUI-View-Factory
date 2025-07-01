@@ -1,12 +1,12 @@
+.PHONY: generate test build
+
+generate:
+	docker run --rm -v $(PWD):/app -e OPENAI_API_KEY=$$OPENAI_API_KEY \
+		swiftui-factory vi generate draganddrop-starter/draganddrop.layout.json \
+		> DragAndDropApp/DragDropAreaView.swift
+
+test:
+	docker run --rm -v $(PWD):/app swiftui-factory pytest -q
+
 build:
-	docker build -t swiftui-factory .
-
-vi:
-	docker run --rm -v $(PWD):/app -e OPENAI_API_KEY=$(OPENAI_API_KEY) swiftui-factory
-
-mockup1:
-	make build
-	docker run --rm -v $(PWD):/app -e OPENAI_API_KEY=$(OPENAI_API_KEY) swiftui-factory interpret examples/mockup1.jpeg \
-	  | docker run --rm -i -v $(PWD):/app -e OPENAI_API_KEY=$(OPENAI_API_KEY) swiftui-factory generate - \
-	  | tee GeneratedView.swift \
-	  | docker run --rm -i -v $(PWD):/app -e OPENAI_API_KEY=$(OPENAI_API_KEY) swiftui-factory test -
+	open DragAndDropApp/DragAndDropApp.xcodeproj
