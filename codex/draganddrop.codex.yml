@@ -1,0 +1,44 @@
+# 🧠 Codex Signal: Bootstrap DragAndDropApp
+
+## 🎯 Goal
+
+Use the SwiftUI View Factory to bootstrap a new macOS SwiftUI app called `DragAndDropApp`.
+
+---
+
+## 🔁 Step 1: Generate SwiftUI Code
+
+Use the existing CLI or API to convert `draganddrop.layout.json` into a SwiftUI file:
+
+Input:
+- `draganddrop-starter/draganddrop.layout.json`
+
+Output:
+- `DragDropAreaView.swift`
+
+Use:
+```bash
+vi generate draganddrop-starter/draganddrop.layout.json > DragDropAreaView.swift
+```
+
+---
+
+## 🧱 Step 2: Scaffold the App
+
+Create a new Xcode macOS SwiftUI app:
+
+- Project name: `DragAndDropApp`
+- Include:
+  - `DragDropAreaView.swift`
+  - `CodePreviewView.swift` (placeholder)
+  - `API.swift` (later)
+  - `Models.swift` (optional)
+
+---
+
+## ✅ Done When
+
+- You can run the app in Xcode
+- It shows the drop area from your layout
+- A placeholder `CodePreviewView` is wired in
+- Backend API is not yet connected (will come next)
