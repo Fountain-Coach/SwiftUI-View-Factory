@@ -3,6 +3,11 @@ from typing import Optional, List
 
 
 class LayoutNode(BaseModel):
+    """Node in a layout tree."""
+
+    id: Optional[str] = None
+    role: Optional[str] = None
+    tag: Optional[str] = None
     type: str
     text: Optional[str] = None
     children: Optional[List['LayoutNode']] = None
