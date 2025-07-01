@@ -15,6 +15,7 @@ final class API {
     }
 
     /// Uploads an image to the `/factory/interpret` endpoint.
+    @MainActor
     func interpret(image: NSImage) async throws -> LayoutInterpretationResponse {
         guard let data = image.tiffRepresentation else {
             throw URLError(.cannotDecodeContentData)
@@ -39,6 +40,7 @@ final class API {
     }
 
     /// Sends a layout to the `/factory/generate` endpoint.
+    @MainActor
     func generate(from layout: LayoutNode) async throws -> String {
         var request = URLRequest(url: baseURL.appendingPathComponent("factory/generate"))
         request.httpMethod = "POST"
