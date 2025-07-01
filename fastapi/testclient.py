@@ -20,7 +20,13 @@ class TestClient:
     def __init__(self, app) -> None:
         self.app = app
 
-    def _call(self, method: str, path: str, json: Dict | None = None, files: Dict | None = None):
+    def _call(
+        self,
+        method: str,
+        path: str,
+        json: Dict | None = None,
+        files: Dict | None = None,
+    ):
         func = self.app.routes.get((method, path))
         if func is None:
             return Response(404, None)

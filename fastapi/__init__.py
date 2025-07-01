@@ -40,6 +40,7 @@ class FastAPI:
     def __init__(self, title: str | None = None) -> None:
         self.title = title
         self.routes: Dict[Tuple[str, str], Callable] = {}
+
         # minimal openapi endpoint
         @self.get("/openapi.json")
         def _openapi():
