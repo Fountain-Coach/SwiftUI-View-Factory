@@ -1,3 +1,1 @@
-# Example: mockup5
-
-Demonstrates layer-based layout using a simple ZStack.
+# mockup5: ZStack with background image and overlay text.
