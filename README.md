@@ -20,6 +20,7 @@ SwiftUI View Factory converts UI mockups or structured layout trees into product
 - **mockup5** – `ZStack` with a background image and overlay text
 - **mockup6** – single `TextField` bound to a state variable
 - **mockup7** – grouped input fields inside a `Form`
+- **mockup8** – demonstrates backend hooks via `onAppear`
 
 ## 🚀 Getting Started
 ### CLI
@@ -58,6 +59,19 @@ generated SwiftUI code. Example payload:
 
 `font` and `color` apply to `Text` and `Button` views while `spacing` controls
 stack spacing. All fields are optional.
+
+### Backend hooks
+Enable `backend_hooks` to insert an `.onAppear` block for analytics or network
+calls:
+
+```json
+{
+  "layout": {"type": "Text", "text": "Hello"},
+  "backend_hooks": true
+}
+```
+The generated SwiftUI view will contain an `onAppear` modifier with a placeholder
+`print` statement so you can wire up your backend SDK.
 
 ### Running tests
 ```bash

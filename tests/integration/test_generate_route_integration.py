@@ -56,3 +56,16 @@ def test_generate_endpoint_with_style():
     assert "VStack(spacing: 5)" in swift
     assert ".font(.title)" in swift
     assert ".foregroundColor(.red)" in swift
+
+
+def test_generate_endpoint_backend_hooks():
+    client = TestClient(app)
+    layout = {"type": "Text", "text": "Hi"}
+    resp = client.post(
+        "/factory/generate",
+        json={"layout": layout, "backend_hooks": True},
+    )
+    assert resp.status_code == 200
+    swift = resp.json()["swift"]
+    assert ".onAppear {" in swift
+    assert 'print("Analytics event")' in swift

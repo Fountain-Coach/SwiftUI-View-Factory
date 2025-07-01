@@ -77,7 +77,9 @@ paths:
                 backend_hooks:
                   type: boolean
                   default: false
-                  description: If true, embed backend SDK calls (e.g., onAppear) into generated code
+                  description: |
+                    If true, the generated SwiftUI view includes an `.onAppear`
+                    block where analytics or network logic can be invoked.
       responses:
         '200':
           description: Generated SwiftUI view code
