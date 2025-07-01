@@ -4,3 +4,4 @@ pydantic
 openai
 click
 pytest
+python-multipart
