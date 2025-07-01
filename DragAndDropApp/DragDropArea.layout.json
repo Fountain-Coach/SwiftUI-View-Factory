@@ -1,0 +1,8 @@
+{
+  "type": "VStack",
+  "children": [
+    { "type": "Image", "text": "placeholder" },
+    { "type": "Text", "text": "Drop Image Here" },
+    { "type": "Button", "text": "Choose File" }
+  ]
+}

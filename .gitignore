@@ -47,6 +47,8 @@ ruff_cache/
 # Allow committed example JSON files
 !examples/*.layout.json
 !examples/*.swift
+!DragAndDropApp/**/*.swift
+!DragAndDropApp/**/*.json
 
 # Ignore generated UI files if any
 generated_ui/
