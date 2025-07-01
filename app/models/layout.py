@@ -23,6 +23,8 @@ class LayoutNode(BaseModel):
     tag: Optional[str] = None
     type: ComponentType
     text: Optional[str] = None
+    # Container types like ``VStack`` or ``ZStack`` may hold multiple child
+    # nodes.  Non-container elements generally omit this field.
     children: Optional[List['LayoutNode']] = None
     # Conditional layout support
     condition: Optional[str] = None

@@ -60,3 +60,17 @@ def test_conditional_node():
     assert 'Text("Yes")' in swift
     assert '} else {' in swift
     assert 'Text("No")' in swift
+
+
+def test_zstack_node():
+    layout = LayoutNode(
+        type="ZStack",
+        children=[
+            LayoutNode(type="Image", text="background"),
+            LayoutNode(type="Text", text="Overlay"),
+        ],
+    )
+    swift = generate_swift(layout)
+    assert "ZStack {" in swift
+    assert 'Image("background")' in swift
+    assert 'Text("Overlay")' in swift

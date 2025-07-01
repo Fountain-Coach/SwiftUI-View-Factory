@@ -1,0 +1,7 @@
+{
+  "type": "ZStack",
+  "children": [
+    { "type": "Image", "text": "background" },
+    { "type": "Text", "text": "Overlay" }
+  ]
+}
