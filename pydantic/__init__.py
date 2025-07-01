@@ -4,7 +4,21 @@ class BaseModel:
             setattr(self, k, v)
 
     def dict(self, *args, **kwargs):
-        return self.__dict__
+        result = {}
+        for k, v in self.__dict__.items():
+            if hasattr(v, "dict"):
+                result[k] = v.dict(*args, **kwargs)
+            elif isinstance(v, list):
+                processed = []
+                for item in v:
+                    if hasattr(item, "dict"):
+                        processed.append(item.dict(*args, **kwargs))
+                    else:
+                        processed.append(item)
+                result[k] = processed
+            else:
+                result[k] = v
+        return result
 
     @classmethod
     def parse_obj(cls, obj):
