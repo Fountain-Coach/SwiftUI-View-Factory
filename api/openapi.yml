@@ -161,7 +161,16 @@ components:
         type:
           type: string
           description: SwiftUI component type
-          enum: [VStack, HStack, Text, Image, Button, Spacer, ScrollView, ZStack, Conditional]
+          enum:
+            - VStack
+            - HStack
+            - Text
+            - Image
+            - Button
+            - Spacer
+            - ScrollView
+            - ZStack
+            - Conditional
         text:
           type: string
           nullable: true

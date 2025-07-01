@@ -1,5 +1,18 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Literal
+
+# Supported SwiftUI component types
+ComponentType = Literal[
+    "VStack",
+    "HStack",
+    "Text",
+    "Image",
+    "Button",
+    "Spacer",
+    "ScrollView",
+    "ZStack",
+    "Conditional",
+]
 
 
 class LayoutNode(BaseModel):
@@ -8,7 +21,7 @@ class LayoutNode(BaseModel):
     id: Optional[str] = None
     role: Optional[str] = None
     tag: Optional[str] = None
-    type: str
+    type: ComponentType
     text: Optional[str] = None
     children: Optional[List['LayoutNode']] = None
     # Conditional layout support

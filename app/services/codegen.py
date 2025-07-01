@@ -54,8 +54,13 @@ def generate_swift(layout: LayoutNode) -> str:
         if include_header and node.id:
             out.append(f"{space}// id: {node.id}")
 
-        if t in {"VStack", "HStack", "ZStack", "ScrollView"}:
+        if t in {"VStack", "HStack", "ZStack"}:
             out.append(f"{space}{t} {{")
+            for child in node.children or []:
+                out.extend(render(child, depth + 1))
+            out.append(f"{space}}}")
+        elif t == "ScrollView":
+            out.append(f"{space}ScrollView {{")
             for child in node.children or []:
                 out.extend(render(child, depth + 1))
             out.append(f"{space}}}")
