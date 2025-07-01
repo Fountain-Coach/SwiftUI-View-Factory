@@ -1,17 +1,21 @@
 name: Verify OpenAPI endpoint
 goal: |
-  Ensure the FastAPI service returns a valid OpenAPI schema from /openapi.json.
+  Ensure the FastAPI service returns a valid OpenAPI schema from /openapi.json using Docker and HTTP.
+
 steps:
-  - name: Start the FastAPI service (if needed)
+  - name: Start the FastAPI service
     run: docker compose up -d fastapi-app
 
-  - name: Use Python TestClient to request the schema
+  - name: Wait for service to be ready
     run: |
-      from fastapi.testclient import TestClient
-      from app.main import app
-      client = TestClient(app)
-      resp = client.get('/openapi.json')
-      assert resp.status_code == 200, f"Unexpected status code: {resp.status_code}"
-      data = resp.json()
-      assert 'openapi' in data, "Not a valid OpenAPI response"
-      print("✅ /openapi.json schema OK")
+      for i in {1..10}; do
+        curl -sf http://localhost:8000/openapi.json && break
+        sleep 1
+      done
+
+  - name: Validate OpenAPI schema via HTTP
+    run: |
+      curl -s http://localhost:8000/openapi.json | jq '.openapi' | grep -q '"3.'
+
+  - name: Stop the FastAPI service
+    run: docker compose down
