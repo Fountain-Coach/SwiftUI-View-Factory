@@ -3,7 +3,11 @@ from app.models.layout import LayoutNode
 from typing import Dict, List, Optional, Any
 
 
-def generate_swift(layout: LayoutNode, style: Optional[Dict[str, Any]] = None) -> str:
+def generate_swift(
+    layout: LayoutNode,
+    style: Optional[Dict[str, Any]] = None,
+    backend_hooks: bool = False,
+) -> str:
     """Convert a ``LayoutNode`` tree into a SwiftUI ``View`` struct.
 
     The function recursively walks the ``LayoutNode`` hierarchy and
@@ -168,6 +172,11 @@ def generate_swift(layout: LayoutNode, style: Optional[Dict[str, Any]] = None) -
         return out
 
     lines.extend(render(layout, 2))
+
+    if backend_hooks:
+        lines.append(f"{indent_unit*2}.onAppear {{")
+        lines.append(f"{indent_unit*3}print(\"Analytics event\")")
+        lines.append(f"{indent_unit*2}}}")
 
     lines.append(f"{indent_unit}}}")
     lines.append("}")

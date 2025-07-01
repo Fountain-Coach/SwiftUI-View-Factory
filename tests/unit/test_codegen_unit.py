@@ -57,3 +57,10 @@ def test_generate_with_style_options():
     assert "VStack(spacing: 10)" in swift
     assert ".font(.title)" in swift
     assert ".foregroundColor(.red)" in swift
+
+
+def test_generate_with_backend_hooks():
+    layout = LayoutNode(type="Text", text="Ping")
+    swift = generate_swift(layout, backend_hooks=True)
+    assert ".onAppear {" in swift
+    assert 'print("Analytics event")' in swift

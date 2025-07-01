@@ -25,4 +25,10 @@ async def generate(req: GenerateRequest):
     if isinstance(style, dict):
         style = StyleOptions(**style)
 
-    return {"swift": generate_swift(layout, style=style.__dict__)}
+    return {
+        "swift": generate_swift(
+            layout,
+            style=style.__dict__,
+            backend_hooks=req.backend_hooks,
+        )
+    }
