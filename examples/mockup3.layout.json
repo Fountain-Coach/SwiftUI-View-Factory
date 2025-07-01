@@ -1,0 +1,12 @@
+{
+  "type": "Conditional",
+  "condition": "userIsLoggedIn",
+  "then": {
+    "type": "Text",
+    "text": "Welcome back!"
+  },
+  "else": {
+    "type": "Button",
+    "text": "Log in"
+  }
+}
