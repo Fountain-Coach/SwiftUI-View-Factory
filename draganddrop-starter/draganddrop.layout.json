@@ -1,0 +1,53 @@
+{
+  "type": "HStack",
+  "children": [
+    {
+      "type": "VStack",
+      "children": [
+        {
+          "type": "Circle",
+          "id": "statusDot"
+        },
+        {
+          "type": "Spacer"
+        },
+        {
+          "type": "Text",
+          "text": "Drop Image Here",
+          "id": "dropLabel"
+        },
+        {
+          "type": "Spacer"
+        },
+        {
+          "type": "TextField",
+          "text": "Optional input",
+          "id": "jsonInput"
+        }
+      ]
+    },
+    {
+      "type": "VStack",
+      "children": [
+        {
+          "type": "Circle",
+          "id": "previewDot"
+        },
+        {
+          "type": "Text",
+          "text": "Generated SwiftUI Code:",
+          "id": "codeLabel"
+        },
+        {
+          "type": "Text",
+          "text": "// code preview here",
+          "id": "codeBlock"
+        },
+        {
+          "type": "Rectangle",
+          "id": "buildStatusBar"
+        }
+      ]
+    }
+  ]
+}
