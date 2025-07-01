@@ -8,6 +8,7 @@ final class API {
     let baseURL: URL
     private let session: URLSession
 
+    @MainActor
     init(baseURL: URL = AppConfig.shared.baseURL, session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
