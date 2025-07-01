@@ -22,3 +22,27 @@ def test_header_comment_included():
     layout = LayoutNode(type="Text", text="Hi")
     swift = generate_swift(layout)
     assert swift.splitlines()[0].startswith("// Generated")
+
+
+def test_button_role_submit():
+    layout = LayoutNode(type="Button", text="Save", role="submit")
+    swift = generate_swift(layout)
+    assert 'Button("Save") {}.buttonStyle(.borderedProminent)' in swift
+
+
+def test_text_readonly_tag():
+    layout = LayoutNode(type="Text", text="Readonly", tag="readOnly")
+    swift = generate_swift(layout)
+    assert 'Text("Readonly").foregroundColor(.gray)' in swift
+
+
+def test_id_comment_present():
+    layout = LayoutNode(type="Text", text="ID", id="node1")
+    swift = generate_swift(layout)
+    lines = swift.splitlines()
+    for i, line in enumerate(lines):
+        if 'Text("ID")' in line:
+            assert lines[i - 1].strip() == "// id: node1"
+            break
+    else:
+        assert False, "id comment missing"

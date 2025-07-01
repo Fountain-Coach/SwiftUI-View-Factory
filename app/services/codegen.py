@@ -50,6 +50,10 @@ def generate_swift(layout: LayoutNode) -> str:
         t = node.type
         out: List[str] = []
 
+        # Preserve node id in a comment when header comments are enabled
+        if include_header and node.id:
+            out.append(f"{space}// id: {node.id}")
+
         if t in {"VStack", "HStack", "ZStack", "ScrollView"}:
             out.append(f"{space}{t} {{")
             for child in node.children or []:
@@ -57,7 +61,10 @@ def generate_swift(layout: LayoutNode) -> str:
             out.append(f"{space}}}")
         elif t == "Text":
             content = escape(node.text or "")
-            out.append(f'{space}Text("{content}")')
+            line = f'{space}Text("{content}")'
+            if node.tag == "readOnly":
+                line += ".foregroundColor(.gray)"
+            out.append(line)
         elif t == "Image":
             name = escape(node.text or "")
             out.append(f'{space}Image("{name}")')
@@ -65,7 +72,10 @@ def generate_swift(layout: LayoutNode) -> str:
             out.append(f"{space}Spacer()")
         elif t == "Button":
             label = escape(node.text or "Button")
-            out.append(f'{space}Button("{label}") {{}}')
+            line = f'{space}Button("{label}") {{}}'
+            if node.role == "submit":
+                line += ".buttonStyle(.borderedProminent)"
+            out.append(line)
         else:
             # Fallback for unknown node types - emit as a call with children
             out.append(f"{space}{t} {{")
