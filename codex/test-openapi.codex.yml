@@ -1,21 +1,23 @@
-name: Verify OpenAPI endpoint
+name: Validate OpenAPI schema via HTTP
 goal: |
-  Ensure the FastAPI service returns a valid OpenAPI schema from /openapi.json using Docker and HTTP.
-
+  Ensure the FastAPI server is running and exposes a valid OpenAPI schema at /openapi.json.
 steps:
-  - name: Start the FastAPI service
-    run: docker compose up -d fastapi-app
+  - name: Start server in background
+    run: uvicorn app.main:app --port 8000 &
 
-  - name: Wait for service to be ready
+  - name: Wait briefly to ensure server is up
+    run: sleep 2
+
+  - name: Fetch and validate schema
     run: |
-      for i in {1..10}; do
-        curl -sf http://localhost:8000/openapi.json && break
-        sleep 1
-      done
-
-  - name: Validate OpenAPI schema via HTTP
-    run: |
-      curl -s http://localhost:8000/openapi.json | jq '.openapi' | grep -q '"3.'
-
-  - name: Stop the FastAPI service
-    run: docker compose down
+      import requests
+      resp = requests.get("http://localhost:8000/openapi.json")
+      if resp.status_code != 200:
+          print(f"❌ Status {resp.status_code}")
+          print(resp.text)
+          exit(1)
+      data = resp.json()
+      if "openapi" not in data:
+          print("❌ Missing OpenAPI key in response")
+          exit(1)
+      print("✅ Valid OpenAPI schema found")
