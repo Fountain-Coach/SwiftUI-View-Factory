@@ -13,6 +13,7 @@ ComponentType = Literal[
     "ZStack",
     "Conditional",
     "TextField",
+    "Form",
 ]
 
 
@@ -24,7 +25,7 @@ class LayoutNode(BaseModel):
     tag: Optional[str] = None
     type: ComponentType
     text: Optional[str] = None
-    # Container types like ``VStack`` or ``ZStack`` may hold multiple child
+    # Container types like ``VStack``, ``ZStack`` or ``Form`` may hold multiple child
     # nodes.  Non-container elements generally omit this field.
     children: Optional[List['LayoutNode']] = None
     # Conditional layout support

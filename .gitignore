@@ -46,6 +46,7 @@ ruff_cache/
 *.bin
 # Allow committed example JSON files
 !examples/*.layout.json
+!examples/*.swift
 
 # Ignore generated UI files if any
 generated_ui/

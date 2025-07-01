@@ -81,3 +81,19 @@ def test_textfield_state_binding():
     swift = generate_swift(layout)
     assert '@State private var emailInput: String = ""' in swift
     assert 'TextField("Email", text: $emailInput)' in swift
+
+
+def test_form_node():
+    layout = LayoutNode(
+        type="Form",
+        children=[
+            LayoutNode(type="TextField", text="Name", id="nameInput"),
+            LayoutNode(type="TextField", text="Email", id="emailInput"),
+        ],
+    )
+    swift = generate_swift(layout)
+    assert "Form {" in swift
+    assert 'TextField("Name", text: $nameInput)' in swift
+    assert 'TextField("Email", text: $emailInput)' in swift
+    assert '@State private var nameInput: String = ""' in swift
+    assert '@State private var emailInput: String = ""' in swift

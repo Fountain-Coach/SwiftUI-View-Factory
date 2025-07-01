@@ -172,6 +172,7 @@ components:
             - ZStack
             - Conditional
             - TextField
+            - Form
         text:
           type: string
           nullable: true
@@ -182,7 +183,7 @@ components:
           nullable: true
           description: >
             Child layout nodes rendered inside container views. Multiple entries
-            are typically used for ``VStack``, ``HStack`` or ``ZStack`` groups.
+            are typically used for ``VStack``, ``HStack``, ``ZStack`` or ``Form`` groups.
         condition:
           type: string
           description: Condition expression controlling the branch

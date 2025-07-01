@@ -88,6 +88,11 @@ def generate_swift(layout: LayoutNode) -> str:
             for child in node.children or []:
                 out.extend(render(child, depth + 1))
             out.append(f"{space}}}")
+        elif t == "Form":
+            out.append(f"{space}Form {{")
+            for child in node.children or []:
+                out.extend(render(child, depth + 1))
+            out.append(f"{space}}}")
         elif t == "Text":
             content = escape(node.text or "")
             line = f'{space}Text("{content}")'
