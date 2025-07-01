@@ -5,9 +5,12 @@ import openai
 import base64
 import json
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Ensure API key is loaded from environment if available
-openai.api_key = os.getenv("OPENAI_API_KEY", openai.api_key)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse:

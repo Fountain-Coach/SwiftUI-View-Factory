@@ -56,5 +56,6 @@ artifacts/
 # Ignore OpenAI or Codex secrets
 .env
 .env.*
+!.env.example
 openai_key.txt
 codex.config.*
