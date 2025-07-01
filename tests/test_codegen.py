@@ -46,3 +46,17 @@ def test_id_comment_present():
             break
     else:
         assert False, "id comment missing"
+
+
+def test_conditional_node():
+    layout = LayoutNode(
+        type="Conditional",
+        condition="flag",
+        then=LayoutNode(type="Text", text="Yes"),
+        **{"else": LayoutNode(type="Text", text="No")}
+    )
+    swift = generate_swift(layout)
+    assert "if flag {" in swift
+    assert 'Text("Yes")' in swift
+    assert '} else {' in swift
+    assert 'Text("No")' in swift

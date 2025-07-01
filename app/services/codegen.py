@@ -76,6 +76,15 @@ def generate_swift(layout: LayoutNode) -> str:
             if node.role == "submit":
                 line += ".buttonStyle(.borderedProminent)"
             out.append(line)
+        elif t == "Conditional":
+            cond = node.condition or "false"
+            out.append(f"{space}if {cond} {{")
+            if node.then:
+                out.extend(render(node.then, depth + 1))
+            out.append(f"{space}}} else {{")
+            if getattr(node, 'else_', None):
+                out.extend(render(node.else_, depth + 1))
+            out.append(f"{space}}}")
         else:
             # Fallback for unknown node types - emit as a call with children
             out.append(f"{space}{t} {{")

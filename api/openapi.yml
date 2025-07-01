@@ -161,7 +161,7 @@ components:
         type:
           type: string
           description: SwiftUI component type
-          enum: [VStack, HStack, Text, Image, Button, Spacer, ScrollView, ZStack]
+          enum: [VStack, HStack, Text, Image, Button, Spacer, ScrollView, ZStack, Conditional]
         text:
           type: string
           nullable: true
@@ -169,6 +169,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+        condition:
+          type: string
+          description: Condition expression controlling the branch
+          nullable: true
+        then:
+          $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+        else:
+          $ref: '#/components/schemas/LayoutNode'
           nullable: true
 
     ErrorResponse:
