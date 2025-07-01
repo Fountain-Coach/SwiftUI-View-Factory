@@ -44,8 +44,12 @@ def test_build(
                 capture_output=True,
                 text=True,
             )
-            log = f"{result.stdout}{result.stderr}"
             success = result.returncode == 0
+            log = f"{result.stdout}{result.stderr}".strip()
+            if not success:
+                err_lines = [l for l in log.splitlines() if "error:" in l]
+                if err_lines:
+                    log = "\n".join(err_lines)
         except FileNotFoundError as e:
             # swiftc not available
             success = False
