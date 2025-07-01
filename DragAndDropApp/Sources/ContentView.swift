@@ -21,12 +21,13 @@ struct ContentView: View {
     }
 
     /// Sends the image to the backend and updates the code preview.
+    @MainActor
     func processImage() async {
         guard let image = selectedImage else { return }
         isLoading = true
         do {
-            let layout = try await API.shared.interpret(image: image)
-            generatedCode = try await API.shared.generate(from: layout)
+            let layoutResponse = try await API.shared.interpret(image: image)
+            generatedCode = try await API.shared.generate(from: layoutResponse.structured)
         } catch {
             generatedCode = "Error: \(error.localizedDescription)"
         }
