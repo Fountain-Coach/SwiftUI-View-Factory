@@ -64,3 +64,54 @@ def test_generate_with_backend_hooks():
     swift = generate_swift(layout, backend_hooks=True)
     assert ".onAppear {" in swift
     assert 'print("Analytics event")' in swift
+
+
+def test_generate_without_backend_hooks():
+    layout = LayoutNode(type="Text", text="Ping")
+    swift = generate_swift(layout)
+    assert ".onAppear {" not in swift
+
+
+def test_generate_scrollview():
+    layout = LayoutNode(
+        type="ScrollView",
+        children=[LayoutNode(type="Text", text="Item 1"), LayoutNode(type="Text", text="Item 2")],
+    )
+    swift = generate_swift(layout)
+    assert "ScrollView {" in swift
+    assert 'Text("Item 1")' in swift
+    assert 'Text("Item 2")' in swift
+
+
+def test_generate_zstack():
+    layout = LayoutNode(
+        type="ZStack",
+        children=[LayoutNode(type="Image", text="bg"), LayoutNode(type="Text", text="Overlay")],
+    )
+    swift = generate_swift(layout)
+    assert "ZStack {" in swift
+    assert 'Image("bg")' in swift
+    assert 'Text("Overlay")' in swift
+
+
+def test_generate_form_with_textfields():
+    layout = LayoutNode(
+        type="Form",
+        children=[
+            LayoutNode(type="TextField", text="Name", id="name"),
+            LayoutNode(type="TextField", text="Email", id="email"),
+        ],
+    )
+    swift = generate_swift(layout)
+    assert "Form {" in swift
+    assert 'TextField("Name", text: $name)' in swift
+    assert 'TextField("Email", text: $email)' in swift
+
+
+def test_generate_with_indent_and_header_off():
+    layout = LayoutNode(type="VStack", children=[LayoutNode(type="Text", text="Hi")])
+    style = {"indent": 4, "header_comment": False}
+    swift = generate_swift(layout, style)
+    lines = swift.splitlines()
+    assert lines[0].startswith("struct GeneratedView")
+    assert lines[1].startswith("    var body")
