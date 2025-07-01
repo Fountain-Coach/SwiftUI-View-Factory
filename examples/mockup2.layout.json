@@ -1,0 +1,18 @@
+{
+  "type": "VStack",
+  "id": "root",
+  "children": [
+    {
+      "type": "Text",
+      "text": "Welcome Back",
+      "id": "welcome-text",
+      "tag": "readOnly"
+    },
+    {
+      "type": "Button",
+      "text": "Submit",
+      "id": "submit-button",
+      "role": "submit"
+    }
+  ]
+}
