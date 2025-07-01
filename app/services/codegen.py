@@ -1,9 +1,9 @@
 # service/codegen.py
 from app.models.layout import LayoutNode
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 
-def generate_swift(layout: LayoutNode) -> str:
+def generate_swift(layout: LayoutNode, style: Optional[Dict[str, Any]] = None) -> str:
     """Convert a ``LayoutNode`` tree into a SwiftUI ``View`` struct.
 
     The function recursively walks the ``LayoutNode`` hierarchy and
@@ -25,14 +25,21 @@ def generate_swift(layout: LayoutNode) -> str:
 
     # Basic style configuration.  In a future version these values might be
     # provided by the API.  For now we honour the defaults from the OpenAPI
-    # specification.
-    style: Dict[str, Optional[int | bool]] = {
+    # specification and allow overrides via the ``style`` argument.
+    style = {
         "indent": 2,
         "header_comment": True,
+        "font": None,
+        "color": None,
+        "spacing": None,
+        **(style or {}),
     }
 
     indent_unit = " " * int(style.get("indent", 2))
     include_header = bool(style.get("header_comment", True))
+    font_style = style.get("font")
+    color_style = style.get("color")
+    spacing = style.get("spacing")
 
     lines: List[str] = []
 
@@ -74,7 +81,10 @@ def generate_swift(layout: LayoutNode) -> str:
             out.append(f"{space}// id: {node.id}")
 
         if t in {"VStack", "HStack"}:
-            out.append(f"{space}{t} {{")
+            if spacing is not None:
+                out.append(f"{space}{t}(spacing: {spacing}) {{")
+            else:
+                out.append(f"{space}{t} {{")
             for child in node.children or []:
                 out.extend(render(child, depth + 1))
             out.append(f"{space}}}")
@@ -113,8 +123,12 @@ def generate_swift(layout: LayoutNode) -> str:
         elif t == "Text":
             content = escape(node.text or "")
             line = f'{space}Text("{content}")'
+            if font_style:
+                line += f".font(.{font_style})"
             if node.tag == "readOnly":
                 line += ".foregroundColor(.gray)"
+            elif color_style:
+                line += f".foregroundColor(.{color_style})"
             out.append(line)
         elif t == "Image":
             name = escape(node.text or "")
@@ -126,6 +140,10 @@ def generate_swift(layout: LayoutNode) -> str:
             line = f'{space}Button("{label}") {{}}'
             if node.role == "submit":
                 line += ".buttonStyle(.borderedProminent)"
+            if font_style:
+                line += f".font(.{font_style})"
+            if color_style:
+                line += f".foregroundColor(.{color_style})"
             out.append(line)
         elif t == "TextField":
             placeholder = escape(node.text or "")

@@ -11,13 +11,25 @@ from app.main import app
 def test_mockup1_full_flow(monkeypatch):
     # prepare openai patch
     if "openai" not in sys.modules:
-        sys.modules["openai"] = types.SimpleNamespace(api_key=None, ChatCompletion=types.SimpleNamespace())
+        sys.modules["openai"] = types.SimpleNamespace(
+            api_key=None, ChatCompletion=types.SimpleNamespace()
+        )
     import openai
 
     layout_json = json.loads(Path("examples/mockup1.layout.json").read_text())
 
     async def fake_acreate(*args, **kwargs):
-        return {"choices": [{"message": {"content": json.dumps({"structured": layout_json, "version": "layout-v1"})}}]}
+        return {
+            "choices": [
+                {
+                    "message": {
+                        "content": json.dumps(
+                            {"structured": layout_json, "version": "layout-v1"}
+                        )
+                    }
+                }
+            ]
+        }
 
     monkeypatch.setattr(openai.ChatCompletion, "acreate", fake_acreate, raising=False)
 
@@ -26,20 +38,23 @@ def test_mockup1_full_flow(monkeypatch):
             returncode = 0
             stdout = "ok"
             stderr = ""
+
         return Result()
 
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     client = TestClient(app)
     with Path("examples/mockup1.jpeg").open("rb") as f:
-        resp = client.post("/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")})
+        resp = client.post(
+            "/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")}
+        )
     assert resp.status_code == 200
     layout = resp.json()["structured"]
 
-    resp = client.post("/factory/generate", json=layout)
+    resp = client.post("/factory/generate", json={"layout": layout})
     swift = resp.json()["swift"]
 
-    for snippet in ["Text(\"Welcome\")", "Image(\"logo\")", "Button(\"Get Started\")"]:
+    for snippet in ['Text("Welcome")', 'Image("logo")', 'Button("Get Started")']:
         assert snippet in swift
 
     resp = client.post("/factory/test-build", json={"swift": swift})

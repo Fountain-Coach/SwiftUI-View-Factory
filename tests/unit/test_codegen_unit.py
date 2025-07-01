@@ -45,3 +45,15 @@ def test_generate_navigation_list_section():
     assert "List {" in swift
     assert 'Section(header: Text("Header"))' in swift
     assert 'Text("Row1")' in swift
+
+
+def test_generate_with_style_options():
+    layout = LayoutNode(
+        type="VStack",
+        children=[LayoutNode(type="Text", text="Hello")],
+    )
+    style = {"font": "title", "color": "red", "spacing": 10}
+    swift = generate_swift(layout, style)
+    assert "VStack(spacing: 10)" in swift
+    assert ".font(.title)" in swift
+    assert ".foregroundColor(.red)" in swift
