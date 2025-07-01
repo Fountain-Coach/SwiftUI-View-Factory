@@ -44,6 +44,27 @@ Visit http://localhost:8000/docs for interactive API docs.
 pytest
 ```
 
+## Docker Support
+Build the container image:
+
+```bash
+docker build -t swiftui-factory .
+```
+
+Run the CLI using Docker:
+
+```bash
+docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret examples/mockup1.jpeg
+```
+
+Run the FastAPI server:
+
+```bash
+docker run -p 8000:8000 -e OPENAI_API_KEY=... swiftui-factory uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+See [USAGE.md](USAGE.md) for more details.
+
 ## ✅ CI
 - ![CI Status](https://github.com/yourname/SwiftUI-View-Factory/actions/workflows/ci.yml/badge.svg)
 - Python 3.11

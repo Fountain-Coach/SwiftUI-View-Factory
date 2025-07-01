@@ -5,6 +5,16 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+def test_openapi_schema_available():
+    """Ensure the OpenAPI schema is served."""
+    from app.main import app
+
+    client = TestClient(app)
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+    assert "paths" in response.json()
+
+
 def test_placeholder():
     assert True
 
