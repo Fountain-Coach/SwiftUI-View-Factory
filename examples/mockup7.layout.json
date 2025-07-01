@@ -1,0 +1,7 @@
+{
+  "type": "Form",
+  "children": [
+    { "type": "TextField", "text": "Name", "id": "nameInput" },
+    { "type": "TextField", "text": "Email", "id": "emailInput" }
+  ]
+}
