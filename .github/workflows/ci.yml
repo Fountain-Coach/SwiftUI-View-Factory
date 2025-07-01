@@ -28,9 +28,12 @@ jobs:
         run: |
           python - <<'PY'
           import os, glob, sys
+          print('Found layout files:', glob.glob('examples/*.layout.json'))
           missing=[]
           for layout in glob.glob('examples/*.layout.json'):
               base=layout[:-12]
+              print('Checking for:', base + '.swift', 'and', base + '.readme.md')
+              print('Exists:', os.path.exists(base + '.swift'), os.path.exists(base + '.readme.md'))
               if not (os.path.exists(base+'.swift') and os.path.exists(base+'.readme.md')):
                   missing.append(os.path.basename(base))
           if missing:
