@@ -1,0 +1,180 @@
+openapi: 3.1.0
+info:
+  title: SwiftUI View Factory API
+  description: |
+    A standalone service that converts UI mockups or structured layout trees
+    into production-grade SwiftUI views, optionally wired to backend SDKs.
+  version: 1.2.0
+
+servers:
+  - url: http://localhost:8000/api/v1
+
+paths:
+  /factory/interpret:
+    post:
+      summary: Interpret UI mockup image
+      description: Upload a UI screenshot or sketch to generate a structured layout tree.
+      operationId: interpretLayout
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Structured layout response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LayoutInterpretationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /factory/generate:
+    post:
+      summary: Generate SwiftUI view code
+      description: Converts a structured layout into a SwiftUI `View` struct with optional backend wiring.
+      operationId: generateSwiftUIView
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                layout:
+                  $ref: '#/components/schemas/LayoutNode'
+                name:
+                  type: string
+                  description: Optional name for the generated SwiftUI view (e.g., HomeView)
+                style:
+                  type: object
+                  properties:
+                    indent:
+                      type: integer
+                      default: 2
+                    header_comment:
+                      type: boolean
+                      default: true
+                backend_hooks:
+                  type: boolean
+                  default: false
+                  description: If true, embed backend SDK calls (e.g., onAppear) into generated code
+      responses:
+        '200':
+          description: Generated SwiftUI view code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  swift:
+                    type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /factory/test-build:
+    post:
+      summary: Test SwiftUI build output
+      description: Accepts Swift source and validates whether it compiles into an executable or framework.
+      operationId: testSwiftBuild
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                swift:
+                  type: string
+                output_binary:
+                  type: boolean
+                  default: false
+                  description: If true, returns path to compiled artifact.
+      responses:
+        '200':
+          description: Build result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  log:
+                    type: string
+                  artifact:
+                    type: string
+                    nullable: true
+        '422':
+          description: Build error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    LayoutInterpretationResponse:
+      type: object
+      required:
+        - structured
+      properties:
+        structured:
+          $ref: '#/components/schemas/LayoutNode'
+        description:
+          type: string
+          description: Optional natural language summary
+        version:
+          type: string
+          example: "layout-v1"
+
+    LayoutNode:
+      type: object
+      required:
+        - type
+      properties:
+        id:
+          type: string
+          description: Optional unique identifier for node
+        type:
+          type: string
+          description: SwiftUI component type
+          enum: [VStack, HStack, Text, Image, Button, Spacer, ScrollView, ZStack]
+        text:
+          type: string
+          nullable: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: validation_error
+        message:
+          type: string
+          example: One or more fields are invalid.
+        detail:
+          type: string
+          nullable: true# Insert the finalized OpenAPI spec here

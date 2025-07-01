@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# macOS system files
+.DS_Store
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Coverage/test artifacts
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+.cache/
+pytest_cache/
+.pytest_cache/
+
+# MyPy, Pyright, Ruff
+.mypy_cache/
+.pyright/
+ruff_cache/
+
+# Logs and debug
+*.log
+
+# Output
+*.swift
+*.json
+*.bin
+
+# Ignore generated UI files if any
+generated_ui/
+compiler_logs/
+artifacts/
+
+# Ignore OpenAI or Codex secrets
+.env
+.env.*
+openai_key.txt
+codex.config.*

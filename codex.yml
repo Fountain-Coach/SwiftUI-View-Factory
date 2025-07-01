@@ -1,0 +1,8 @@
+codex:
+  service: SwiftUIViewFactory
+  purpose: Generate SwiftUI Views from visual layouts
+  api: api/openapi.yml
+  cli: cli/vi.py
+  tests: tests/
+  main: app/main.py
+  keywords: [swiftui, gpt4, layout, visual-to-code]
