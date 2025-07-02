@@ -9,9 +9,13 @@ let package = Package(
     products: [
         .executable(name: "VisionDemoApp", targets: ["VisionDemoApp"])
     ],
+    dependencies: [
+        .package(path: "../SDK/ExampleSDK")
+    ],
     targets: [
         .executableTarget(
             name: "VisionDemoApp",
+            dependencies: ["ExampleSDK"],
             path: "Sources"
         )
     ]

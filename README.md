@@ -104,6 +104,13 @@ The generated SwiftUI view will contain an `onAppear` modifier with a placeholde
 pytest
 ```
 
+### Client SDKs
+SwiftUI View Factory looks for Swift packages under the `SDK` directory. Any
+package found there is built before the demo applications when running
+`scripts/build_app.sh`. Use conditional imports (`#if canImport(...)`) within the
+apps to access your SDK at runtime. Compiler diagnostics from these builds are
+appended to `build.log` for review.
+
 ## Docker Support
 Build the container image:
 

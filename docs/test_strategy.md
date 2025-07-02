@@ -36,14 +36,29 @@ The command pipes all compiler output to `build.log`. The exit code of `xcodebui
 
 ## Automating with a Script
 
-For convenience, create a small script (e.g. `scripts/build_app.sh`):
+For convenience, create a small script (e.g. `scripts/build_app.sh`). It scans
+the `SDK` directory for local Swift packages, builds them first, then builds the
+demo applications:
 
 ```bash
 #!/bin/bash
 set -euo pipefail
-xcodebuild -scheme DragAndDropApp -configuration Debug -destination 'platform=macOS' build 2>&1 | tee build.log
-xcodebuild -scheme iOSDemoApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee build.log
-xcodebuild -scheme VisionDemoApp -configuration Debug -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build 2>&1 | tee build.log
+LOG="build.log"
+rm -f "$LOG"
+
+# Build SDK packages
+if [ -d "SDK" ]; then
+  for dir in SDK/*; do
+    [ -f "$dir/Package.swift" ] || continue
+    name=$(basename "$dir")
+    (cd "$dir" && xcodebuild -scheme "$name" -configuration Debug build 2>&1 | tee -a ../"$LOG")
+  done
+fi
+
+# Build the demo apps
+xcodebuild -scheme DragAndDropApp -configuration Debug -destination 'platform=macOS' build 2>&1 | tee -a "$LOG"
+xcodebuild -scheme iOSDemoApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
+xcodebuild -scheme VisionDemoApp -configuration Debug -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build 2>&1 | tee -a "$LOG"
 ```
 
 Run the script locally or within your CI pipeline. The output file `build.log` will contain compiler diagnostics. Any build failure stops the script due to `set -e`.

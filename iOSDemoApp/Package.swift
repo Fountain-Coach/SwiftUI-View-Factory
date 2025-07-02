@@ -9,9 +9,13 @@ let package = Package(
     products: [
         .executable(name: "iOSDemoApp", targets: ["iOSDemoApp"])
     ],
+    dependencies: [
+        .package(path: "../SDK/ExampleSDK")
+    ],
     targets: [
         .executableTarget(
             name: "iOSDemoApp",
+            dependencies: ["ExampleSDK"],
             path: "Sources"
         )
     ]
