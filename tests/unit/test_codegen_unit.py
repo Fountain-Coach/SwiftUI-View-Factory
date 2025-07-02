@@ -115,3 +115,20 @@ def test_generate_with_indent_and_header_off():
     lines = swift.splitlines()
     assert lines[0].startswith("struct GeneratedView")
     assert lines[1].startswith("    var body")
+
+
+def test_generate_with_extra_style_modifiers():
+    layout = LayoutNode(type="Text", text="Styled")
+    style = {
+        "bold": True,
+        "italic": True,
+        "padding": 4,
+        "background_color": "blue",
+        "corner_radius": 5,
+    }
+    swift = generate_swift(layout, style)
+    assert ".bold()" in swift
+    assert ".italic()" in swift
+    assert ".padding(4)" in swift
+    assert ".background(Color.blue)" in swift
+    assert ".cornerRadius(5)" in swift
