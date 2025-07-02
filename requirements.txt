@@ -4,3 +4,4 @@ click
 fastapi
 requests
 uvicorn
+python-multipart
