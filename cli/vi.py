@@ -39,7 +39,16 @@ def interpret(obj: dict, image: str) -> None:
             files = {"file": f}
             resp = requests.post(f"{server}/factory/interpret", files=files, timeout=30)
         resp.raise_for_status()
-        click.echo(json.dumps(resp.json(), indent=2))
+        data = resp.json()
+        if isinstance(data, dict) and "log" in data:
+            base = Path(image).stem
+            log_path = Path("Layouts") / f"{base}.openai.log"
+            Path("Layouts").mkdir(exist_ok=True)
+            Path(log_path).write_text(data["log"])
+            click.echo(f"Wrote OpenAI log to {log_path}")
+            # remove log from output to keep layout JSON clean
+            data.pop("log", None)
+        click.echo(json.dumps(data, indent=2))
     except FileNotFoundError:
         click.echo(f"File not found: {image}", err=True)
         raise SystemExit(1)
@@ -88,7 +97,31 @@ def generate(
             if "code" in data and "structured" not in data:
                 msg = data.get("message", "Invalid layout file")
                 click.echo(f"Invalid layout: {msg}", err=True)
+                detail = data.get("detail")
+                if detail:
+                    click.echo(detail, err=True)
+                base = Path(layout_json).name
+                if base.endswith(".layout.json"):
+                    base = base[:-12]
+                else:
+                    base = Path(layout_json).stem
+                log_path = Path(layout_json).with_name(f"{base}.error.log")
+                Path(log_path).write_text(json.dumps(data, indent=2))
+                click.echo(f"Wrote error details to {log_path}", err=True)
+                if "log" in data:
+                    openai_log = Path(layout_json).with_name(f"{base}.openai.log")
+                    Path(openai_log).write_text(data["log"])
+                    click.echo(f"Wrote OpenAI log to {openai_log}", err=True)
                 raise SystemExit(1)
+            if "log" in data:
+                base = Path(layout_json).name
+                if base.endswith(".layout.json"):
+                    base = base[:-12]
+                else:
+                    base = Path(layout_json).stem
+                openai_log = Path(layout_json).with_name(f"{base}.openai.log")
+                Path(openai_log).write_text(data["log"])
+                click.echo(f"Wrote OpenAI log to {openai_log}")
             if "structured" in data:
                 data = data["structured"]
 

@@ -41,6 +41,10 @@ def test_interpret_endpoint(monkeypatch):
     data = resp.json()
     assert data["structured"]["type"] == "VStack"
     assert any(c.get("type") == "Text" for c in data["structured"].get("children", []))
+    log_path = Path("Layouts/example_app_mockup.openai.log")
+    assert log_path.exists()
+    log = json.loads(log_path.read_text())
+    assert "request" in log
 
 
 def test_interpret_openai_error(monkeypatch):
@@ -67,3 +71,7 @@ def test_interpret_openai_error(monkeypatch):
     assert data["code"] == "openai_error"
     assert "boom" in data["message"]
     assert "RuntimeError" in data["detail"]
+    log_path = Path("Layouts/example_app_mockup.openai.log")
+    assert log_path.exists()
+    log = json.loads(log_path.read_text())
+    assert "error" in log

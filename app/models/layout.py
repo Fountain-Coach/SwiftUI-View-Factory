@@ -74,3 +74,4 @@ class LayoutInterpretationResponse(BaseModel):
     structured: LayoutNode
     description: Optional[str] = None
     version: str = "layout-v1"
+    log: Optional[str] = None
