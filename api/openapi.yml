@@ -149,6 +149,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/OpenAIKeyResponse'
 
+  /secret:
+    get:
+      summary: Retrieve the OpenAI API key
+      description: |
+        Returns the API key used when communicating with OpenAI. In local
+        development the key is loaded from a `.env` file. In production the
+        container expects the `OPENAI_API_KEY` environment variable to be set.
+      operationId: getOpenAIKey
+      responses:
+        '200':
+          description: API key response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenAIKeyResponse'
+
 components:
   schemas:
     LayoutInterpretationResponse:
