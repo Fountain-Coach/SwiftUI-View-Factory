@@ -48,6 +48,8 @@ ruff_cache/
 # Allow committed layout and image assets
 !Layouts/*.json
 !Images/*.jpeg
+!ExampleApp/**/*.swift
+!ExampleApp/Package.swift
 !SDK/**/Package.swift
 !SDK/**/*.swift
 

@@ -13,7 +13,9 @@ This repository includes Swift packages that build macOS and iOS user interfaces
 Use `xcodebuild` directly to build the demo packages. Example invocations:
 
 ```bash
-xcodebuild -scheme YourApp -configuration Debug \
+xcodebuild \
+  -scheme ExampleApp \
+  -configuration Debug \
   -destination 'platform=iOS Simulator,name=iPhone 15' \
   build 2>&1 | tee build.log
 ```
@@ -39,6 +41,9 @@ if [ -d "SDK" ]; then
     (cd "$dir" && xcodebuild -scheme "$name" -configuration Debug build 2>&1 | tee -a ../"$LOG")
   done
 fi
+
+# Build the ExampleApp
+xcodebuild -scheme ExampleApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
 
 ```
 
