@@ -1,5 +1,0 @@
-{
-  "code": "openai_error",
-  "message": "OpenAI API error: OPENAI_API_KEY is not set",
-  "detail": ""
-}
