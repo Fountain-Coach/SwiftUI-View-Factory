@@ -1,0 +1,23 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Compose
+        run: docker-compose -f docker-compose.yml up --build --exit-code-from test
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-logs
+          path: ci-logs
+      - name: Commit logs
+        run: |
+          ./scripts/store_logs.sh
