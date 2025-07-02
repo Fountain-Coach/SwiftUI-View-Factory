@@ -16,7 +16,7 @@ def test_mockup1_full_flow(monkeypatch):
         )
     import openai
 
-    layout_json = json.loads(Path("Layouts/demo_app.layout.json").read_text())
+    layout_json = json.loads(Path("Layouts/example_app.layout.json").read_text())
 
     async def fake_acreate(*args, **kwargs):
         return {
@@ -44,9 +44,9 @@ def test_mockup1_full_flow(monkeypatch):
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     client = TestClient(app)
-    with Path("Images/demo_mockup.jpeg").open("rb") as f:
+    with Path("Images/example_app_mockup.jpeg").open("rb") as f:
         resp = client.post(
-            "/factory/interpret", files={"file": ("demo_mockup.jpeg", f, "image/jpeg")}
+            "/factory/interpret", files={"file": ("example_app_mockup.jpeg", f, "image/jpeg")}
         )
     assert resp.status_code == 200
     layout = resp.json()["structured"]
