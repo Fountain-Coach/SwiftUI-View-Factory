@@ -44,7 +44,7 @@ paths:
   /factory/interpret:
     post:
       summary: Interpret UI mockup image
-      description: Upload a UI screenshot or sketch to generate a structured layout tree.
+      description: Upload a UI mock or sketch to generate a structured layout tree.
       tags:
         - Factory
       operationId: interpretLayout
