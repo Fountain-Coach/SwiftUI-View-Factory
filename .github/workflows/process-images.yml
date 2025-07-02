@@ -12,56 +12,31 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      - name: Write OpenAI API key
+        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
 
+      - name: Build containers
+        run: docker compose build
 
-      - name: Set secret service URL
-        run: echo "OPENAI_SECRET_SERVICE_URL=http://localhost:8001" >> $GITHUB_ENV
-
-      - name: Install dependencies
+      - name: Start services
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt fastapi
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Start secret service
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          nohup uvicorn secret_service.main:app --host 0.0.0.0 --port 8001 &
-          sleep 3
-
-      - name: Start API server
-        env:
-          OPENAI_SECRET_SERVICE_URL: ${{ env.OPENAI_SECRET_SERVICE_URL }}
-        run: |
-          nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          sleep 5
-
-      - name: Wait for API to be ready
-        run: |
+          docker compose up -d
           for i in {1..20}; do
             if curl --fail http://localhost:8000/docs > /dev/null 2>&1; then
               echo "API is up"
-              exit 0
+              break
             fi
             sleep 3
           done
-          echo "API failed to start" >&2
-          exit 1
 
       - name: Process new images
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ./scripts/process_images.sh --latest
+            docker compose exec -T fastapi-app ./scripts/process_images.sh --latest
           else
-            ./scripts/process_images.sh
+            docker compose exec -T fastapi-app ./scripts/process_images.sh
           fi
 
+      - name: Shutdown services
+        if: always()
+        run: docker compose down
