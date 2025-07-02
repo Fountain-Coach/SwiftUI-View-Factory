@@ -12,6 +12,30 @@ SwiftUI View Factory converts UI mockups or structured layout trees into product
 - Includes golden test suite for reproducibility
 - Designed for Codex orchestration with behavior-driven examples
 
+## Supported SwiftUI Components
+SwiftUI View Factory focuses on a curated subset of the framework. Only the
+following component types are recognized when interpreting or generating layout
+trees:
+
+```
+VStack
+HStack
+Text
+Image
+Button
+Spacer
+ScrollView
+ZStack
+Conditional
+TextField
+Form
+List
+Section
+NavigationStack
+```
+This list matches the `LayoutNode.type` enumeration in the API schema. Views
+outside this set are ignored.
+
 ## 🧪 Golden Examples
 - **mockup1** – `VStack` with welcome text, logo image and a button
 - **mockup2** – `VStack` showing `role` and `tag` metadata on text and button
