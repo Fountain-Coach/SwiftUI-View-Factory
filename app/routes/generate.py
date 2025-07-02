@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.services.codegen import generate_swift
@@ -9,19 +9,27 @@ router = APIRouter()
 
 
 class GenerateRequest(BaseModel):
-    layout: LayoutNode
+    """Request model for the ``/generate`` endpoint.
+
+    ``layout`` is accepted as a raw dictionary so that invalid layouts do not
+    cause automatic request validation errors.  They can then be handled
+    gracefully within the route handler.
+    """
+
+    layout: dict
     name: Optional[str] = None
-    style: StyleOptions = StyleOptions()
+    style: Optional[StyleOptions] = None
     backend_hooks: bool = False
 
 
 @router.post("/generate")
 async def generate(req: GenerateRequest):
-    layout = req.layout
-    if isinstance(layout, dict):
-        layout = LayoutNode(**layout)
+    try:
+        layout = LayoutNode(**req.layout)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid layout: {exc}")
 
-    style = req.style
+    style = req.style or StyleOptions()
     if isinstance(style, dict):
         style = StyleOptions(**style)
 
