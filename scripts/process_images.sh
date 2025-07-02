@@ -4,7 +4,20 @@ set -euo pipefail
 # Generate layout JSON and Swift views for images in the Images directory.
 # Requires the API server to be running and OPENAI_API_KEY if using OpenAI.
 
-for img in Images/*.{png,jpg,jpeg,JPG,JPEG,PNG}; do
+if [ "${1:-}" = "--latest" ]; then
+  img=$(ls -1t Images/*.{png,jpg,jpeg,JPG,JPEG,PNG} 2>/dev/null | head -n 1 || true)
+  if [ -z "$img" ]; then
+    echo "No images found" >&2
+    exit 0
+  fi
+  images=("$img")
+elif [ "$#" -gt 0 ]; then
+  images=("$@")
+else
+  images=(Images/*.{png,jpg,jpeg,JPG,JPEG,PNG})
+fi
+
+for img in "${images[@]}"; do
   [ -e "$img" ] || continue
   base=$(basename "$img")
   name="${base%.*}"
