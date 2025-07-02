@@ -145,4 +145,6 @@ See [USAGE.md](USAGE.md) for more details.
 - ![CI Status](https://github.com/yourname/SwiftUI-View-Factory/actions/workflows/ci.yml/badge.svg)
 - Python 3.11
 - Formatter: [black](https://github.com/psf/black)
+- Automatic image processing: pushes to `Images/` trigger a workflow that
+  interprets new mockups into `Layouts/` JSON files and generates Swift views.
 
