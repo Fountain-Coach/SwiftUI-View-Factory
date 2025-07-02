@@ -1,0 +1,26 @@
+openapi: 3.1.0
+info:
+  title: OpenAI Secret Service
+  description: |
+    A simple API that returns the OpenAI API key. When running locally the
+    key is loaded from a `.env` file via `python-dotenv`. In production the
+    container expects the `OPENAI_API_KEY` environment variable to be set
+    through platform secrets (e.g. GitHub Secrets).
+  version: 1.0.0
+servers:
+  - url: http://localhost:8001
+paths:
+  /secret:
+    get:
+      summary: Retrieve the OpenAI API key
+      operationId: getSecretKey
+      responses:
+        '200':
+          description: API key response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: string
