@@ -80,6 +80,22 @@ def generate(
     server: str = obj.get("server", BASE_URL)
     try:
         data = json.loads(Path(layout_json).read_text())
+
+        # When the layout file comes directly from the ``interpret`` command
+        # it contains a ``structured`` key with the actual layout tree.  The
+        # interpreter may also return an error object with a ``code`` field.
+        if isinstance(data, dict):
+            if "code" in data and "structured" not in data:
+                msg = data.get("message", "Invalid layout file")
+                click.echo(f"Invalid layout: {msg}", err=True)
+                raise SystemExit(1)
+            if "structured" in data:
+                data = data["structured"]
+
+        if not isinstance(data, dict) or "type" not in data:
+            click.echo("Invalid layout: missing 'type'", err=True)
+            raise SystemExit(1)
+
         payload = {"layout": data}
         if name:
             payload["name"] = name
