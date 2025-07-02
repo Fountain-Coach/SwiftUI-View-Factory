@@ -1,9 +1,9 @@
-pydantic
-pytest
-click
 fastapi
-requests
 uvicorn
+pydantic
+python-dotenv
+pytest
+httpx
+pytest-asyncio
+PyYAML
 python-multipart
-
-openai>=1.0
