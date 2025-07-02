@@ -9,24 +9,30 @@ from app.main import app
 
 
 def test_mockup1_full_flow(monkeypatch):
-    # prepare openai patch
     if "openai" not in sys.modules:
-        sys.modules["openai"] = types.SimpleNamespace(
-            api_key=None, ChatCompletion=types.SimpleNamespace()
-        )
+        sys.modules["openai"] = types.SimpleNamespace(AsyncOpenAI=None)
     import openai
-    openai.api_key = "test"
+    monkeypatch.setenv("OPENAI_API_KEY", "test")
+    monkeypatch.delenv("OPENAI_SECRET_SERVICE_URL", raising=False)
 
     layout_data = json.loads(Path("Layouts/example_app.layout.json").read_text())
 
-    async def fake_acreate(*args, **kwargs):
-        return {
-            "choices": [
-                {"message": {"content": json.dumps(layout_data)}}
-            ]
-        }
+    class FakeResponse:
+        def __init__(self, content):
+            self._content = content
+            self.choices = [types.SimpleNamespace(message=types.SimpleNamespace(content=content))]
 
-    monkeypatch.setattr(openai.ChatCompletion, "acreate", fake_acreate, raising=False)
+        def model_dump(self):
+            return {"choices": [{"message": {"content": self._content}}]}
+
+    async def fake_create(*args, **kwargs):
+        return FakeResponse(json.dumps(layout_data))
+
+    class FakeClient:
+        def __init__(self, *a, **kw):
+            self.chat = types.SimpleNamespace(completions=types.SimpleNamespace(create=fake_create))
+
+    monkeypatch.setattr(openai, "AsyncOpenAI", lambda api_key=None: FakeClient(), raising=False)
 
     def fake_run(cmd, capture_output, text):
         class Result:
@@ -41,7 +47,8 @@ def test_mockup1_full_flow(monkeypatch):
     client = TestClient(app)
     with Path("Images/example_app_mockup.jpeg").open("rb") as f:
         resp = client.post(
-            "/factory/interpret", files={"file": ("example_app_mockup.jpeg", f, "image/jpeg")}
+            "/factory/interpret",
+            files={"file": ("example_app_mockup.jpeg", f, "image/jpeg")},
         )
     assert resp.status_code == 200
     layout = resp.json()["structured"]
