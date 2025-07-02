@@ -26,12 +26,20 @@ for img in "${images[@]}"; do
 
   if [ ! -f "$layout" ]; then
     echo "Interpreting $img"
-    python cli/vi.py interpret "$img" > "$layout"
+    if ! python cli/vi.py interpret "$img" > "$layout"; then
+      echo "Failed interpreting $img" >&2
+      rm -f "$layout"
+      continue
+    fi
   fi
 
   if [ ! -f "$view" ]; then
     echo "Generating Swift for $layout"
-    python cli/vi.py generate "$layout"
+    if ! python cli/vi.py generate "$layout"; then
+      echo "Failed generating Swift for $layout" >&2
+      rm -f "$view" GeneratedView.swift 2>/dev/null || true
+      continue
+    fi
     if [ -f GeneratedView.swift ]; then
       mv GeneratedView.swift "$view"
     fi
