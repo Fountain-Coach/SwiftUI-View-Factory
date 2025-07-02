@@ -5,6 +5,7 @@ import openai
 import base64
 import json
 import os
+import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -73,8 +74,8 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
     except Exception as exc:
         return ErrorResponse(
             code="openai_error",
-            message="OpenAI API error",
-            detail=str(exc),
+            message=f"OpenAI API error: {exc}",
+            detail=traceback.format_exc(),
         )
 
     try:
