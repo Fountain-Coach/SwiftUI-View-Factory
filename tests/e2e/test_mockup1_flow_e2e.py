@@ -15,6 +15,7 @@ def test_mockup1_full_flow(monkeypatch):
             api_key=None, ChatCompletion=types.SimpleNamespace()
         )
     import openai
+    openai.api_key = "test"
 
     layout_data = json.loads(Path("Layouts/example_app.layout.json").read_text())
 
