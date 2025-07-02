@@ -39,6 +39,8 @@ ruff_cache/
 
 # Logs and debug
 *.log
+!Layouts/*.openai.log
+!Layouts/*.error.log
 
 # Output
 *.swift
