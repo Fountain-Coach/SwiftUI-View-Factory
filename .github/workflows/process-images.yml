@@ -17,8 +17,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Export OpenAI API key
-        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Set secret service URL
+        run: echo "OPENAI_SECRET_SERVICE_URL=http://localhost:8001" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |
@@ -30,7 +31,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Start secret service
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          nohup uvicorn secret_service.main:app --host 0.0.0.0 --port 8001 &
+          sleep 3
+
       - name: Start API server
+        env:
+          OPENAI_SECRET_SERVICE_URL: ${{ env.OPENAI_SECRET_SERVICE_URL }}
         run: |
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 5
