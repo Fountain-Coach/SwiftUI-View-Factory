@@ -49,23 +49,11 @@ outside this set are ignored.
 
 ## 🧪 Example App
 The repository ships with a single example workflow. A demo mockup image lives
-under `Images/`. Use the CLI to interpret the image and generate the SwiftUI
-view. The resulting `GeneratedView` is displayed inside the `ExampleApp` Xcode
+under `Images/`. Send the screenshot to the API and generate the SwiftUI view.
+The resulting `GeneratedView` is displayed inside the `ExampleApp` Xcode
 project.
 
 ## 🚀 Getting Started
-### CLI
-```bash
-pip install -r requirements.txt
-python cli/vi.py interpret Images/example_app_mockup.jpeg > Layouts/example_app.layout.json
-python cli/vi.py generate Layouts/example_app.layout.json
-python cli/vi.py test GeneratedView.swift
-```
-Add `--verify-build` when generating to ensure the Swift code compiles:
-```bash
-python cli/vi.py generate Layouts/example_app.layout.json --verify-build
-```
-
 ### Local FastAPI launch
 ```bash
 python -m venv .venv
@@ -74,6 +62,18 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 Visit http://localhost:8000/docs for interactive API docs.
+
+To process the example mockup using ``curl`` (``jq`` extracts the ``swift``
+string):
+
+```bash
+curl -f -F file=@Images/example_app_mockup.jpeg \
+  http://localhost:8000/factory/interpret \
+  > Layouts/example_app.layout.json
+curl -f -H 'Content-Type: application/json' \
+  -d @Layouts/example_app.layout.json \
+  http://localhost:8000/factory/generate | jq -r .swift > GeneratedView.swift
+```
 
 ### Styling options
 The `/factory/generate` endpoint accepts a `style` object to customize
@@ -132,12 +132,6 @@ Build the container image:
 
 ```bash
 docker build -t swiftui-factory .
-```
-
-Run the CLI using Docker:
-
-```bash
-docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/example_app_mockup.jpeg > Layouts/example_app.layout.json
 ```
 
 Run the FastAPI server:
