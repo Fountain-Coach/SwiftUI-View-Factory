@@ -1,32 +1,39 @@
 import json
-import sys
-import types
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import threading
 from pathlib import Path
 import subprocess
 
 from fastapi.testclient import TestClient
 from app.main import app
+import openai
+
+
+def _start_fake_openai(layout_data):
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            if self.path == "/v1/chat/completions":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                resp = {"choices": [{"message": {"content": json.dumps(layout_data)}}]}
+                self.wfile.write(json.dumps(resp).encode())
+            else:
+                self.send_response(404)
+                self.end_headers()
+
+    server = HTTPServer(("localhost", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.daemon = True
+    thread.start()
+    return server, thread
 
 
 def test_mockup1_full_flow(monkeypatch):
-    # prepare openai patch
-    if "openai" not in sys.modules:
-        sys.modules["openai"] = types.SimpleNamespace(
-            api_key=None, ChatCompletion=types.SimpleNamespace()
-        )
-    import openai
-    openai.api_key = "test"
-
     layout_data = json.loads(Path("Layouts/example_app.layout.json").read_text())
-
-    async def fake_acreate(*args, **kwargs):
-        return {
-            "choices": [
-                {"message": {"content": json.dumps(layout_data)}}
-            ]
-        }
-
-    monkeypatch.setattr(openai.ChatCompletion, "acreate", fake_acreate, raising=False)
+    server, thread = _start_fake_openai(layout_data)
+    openai.api_key = "test"
+    openai.base_url = f"http://localhost:{server.server_port}/v1"
 
     def fake_run(cmd, capture_output, text):
         class Result:
@@ -55,3 +62,6 @@ def test_mockup1_full_flow(monkeypatch):
     resp = client.post("/factory/test-build", json={"swift": swift})
     assert resp.status_code == 200
     assert resp.json().get("success") is True
+
+    server.shutdown()
+    thread.join()

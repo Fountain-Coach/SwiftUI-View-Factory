@@ -3,6 +3,7 @@ from fastapi import UploadFile
 from app.models import LayoutNode, LayoutInterpretationResponse, ErrorResponse
 from pathlib import Path
 import openai
+from openai import AsyncOpenAI
 import base64
 import json
 import os
@@ -12,7 +13,7 @@ import requests
 
 load_dotenv()
 
-# Ensure API key is loaded from environment if available
+# Load configuration from environment
 openai.api_key = os.getenv("OPENAI_API_KEY")
 SECRET_SERVICE_URL = os.getenv("OPENAI_SECRET_SERVICE_URL")
 
@@ -28,42 +29,43 @@ def _fetch_api_key() -> str | None:
     return None
 
 
+def ensure_openai_api_key() -> str:
+    """Load the OpenAI API key from the environment or secret service."""
+    if openai.api_key:
+        return openai.api_key
+
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    if not openai.api_key:
+        openai.api_key = _fetch_api_key() or None
+
+    if not openai.api_key:
+        if SECRET_SERVICE_URL:
+            hint = (
+                "OPENAI_API_KEY is not set. Tried fetching from "
+                f"{SECRET_SERVICE_URL}/secret but no key was returned. "
+                "Ensure the secret service is running and accessible."
+            )
+        else:
+            hint = (
+                "OPENAI_API_KEY is not set. Provide the key via the "
+                "environment variable or configure OPENAI_SECRET_SERVICE_URL."
+            )
+        raise RuntimeError(hint)
+    return openai.api_key
+
+
 async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | ErrorResponse:
     """Interpret an uploaded UI mockup image into a layout tree.
 
     The function attempts to use GPT-4 via the OpenAI API to analyse the
     screenshot and return a JSON response matching the
-    ``LayoutInterpretationResponse`` schema. If anything fails (e.g. API key is
-    missing or the response cannot be parsed) a simple fallback layout is
-    returned instead.
+    ``LayoutInterpretationResponse`` schema. Errors are returned as
+    ``ErrorResponse`` objects with logs to aid debugging.
     """
-
-    fallback = LayoutInterpretationResponse(
-        structured=LayoutNode(
-            type="VStack",
-            children=[LayoutNode(type="Text", text="Hello")],
-        ),
-        description="Simple VStack with Hello text",
-        version="layout-v1",
-    )
 
     log_data = {}
     try:
-        if not openai.api_key:
-            openai.api_key = _fetch_api_key() or None
-        if not openai.api_key:
-            if SECRET_SERVICE_URL:
-                hint = (
-                    "OPENAI_API_KEY is not set. Tried fetching from "
-                    f"{SECRET_SERVICE_URL}/secret but no key was returned. "
-                    "Ensure the secret service is running and accessible."
-                )
-            else:
-                hint = (
-                    "OPENAI_API_KEY is not set. Provide the key via the "
-                    "environment variable or configure OPENAI_SECRET_SERVICE_URL."
-                )
-            raise RuntimeError(hint)
+        ensure_openai_api_key()
 
         # Read and base64 encode the uploaded image for GPT-4 vision models
         content = await file.read()
@@ -94,13 +96,14 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
         log_data["request"] = messages
 
         # Call OpenAI asynchronously; surface errors if any
-        response = await openai.ChatCompletion.acreate(
+        client = AsyncOpenAI(api_key=openai.api_key, base_url=getattr(openai, "base_url", None))
+        response = await client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
             max_tokens=500,
         )
         log_data["response"] = response
-        content = response["choices"][0]["message"]["content"]
+        content = response.choices[0].message.content
     except Exception as exc:
         log_data["error"] = str(exc)
         log_json = json.dumps(log_data, indent=2, default=str)
@@ -146,6 +149,15 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
             detail=str(exc),
             log=log_json,
         )
-    except Exception:
-        # If anything goes wrong (no API key, parse error, etc.) return fallback
-        return fallback
+    except Exception as exc:
+        log_data["error"] = str(exc)
+        log_json = json.dumps(log_data, indent=2, default=str)
+        Path("Layouts").mkdir(exist_ok=True)
+        log_path = Path("Layouts") / f"{Path(file.filename).stem}.openai.log"
+        log_path.write_text(log_json)
+        return ErrorResponse(
+            code="unexpected_error",
+            message=str(exc),
+            detail=traceback.format_exc(),
+            log=log_json,
+        )
