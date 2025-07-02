@@ -4,7 +4,7 @@ from app.models.layout import LayoutNode
 
 def test_parse_layout_json():
     with open("Layouts/example_app.layout.json") as f:
-        data = json.load(f)
+        data = json.load(f)["structured"]
     layout = LayoutNode(**data)
     assert layout.type == "VStack"
     assert len(layout.children or []) == 3

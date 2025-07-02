@@ -16,18 +16,12 @@ def test_mockup1_full_flow(monkeypatch):
         )
     import openai
 
-    layout_json = json.loads(Path("Layouts/example_app.layout.json").read_text())
+    layout_data = json.loads(Path("Layouts/example_app.layout.json").read_text())
 
     async def fake_acreate(*args, **kwargs):
         return {
             "choices": [
-                {
-                    "message": {
-                        "content": json.dumps(
-                            {"structured": layout_json, "version": "layout-v1"}
-                        )
-                    }
-                }
+                {"message": {"content": json.dumps(layout_data)}}
             ]
         }
 

@@ -1,10 +1,13 @@
 {
-  "type": "VStack",
-  "id": "root",
-  "tag": "example",
-  "children": [
-    { "type": "Text", "text": "Welcome", "role": "header" },
-    { "type": "Image", "text": "logo" },
-    { "type": "Button", "text": "Get Started", "role": "submit" }
-  ]
+  "structured": {
+    "type": "VStack",
+    "id": "root",
+    "tag": "example",
+    "children": [
+      { "type": "Text", "text": "Welcome", "role": "header" },
+      { "type": "Image", "text": "logo" },
+      { "type": "Button", "text": "Get Started", "role": "submit" }
+    ]
+  },
+  "version": "layout-v1"
 }
