@@ -55,6 +55,11 @@ def interpret(obj: dict, image: str) -> None:
 @click.option("--spacing", type=int, help="Spacing for stack views")
 @click.option("--indent", type=int, help="Indentation width")
 @click.option("--no-header", is_flag=True, help="Omit header comment")
+@click.option(
+    "--verify-build",
+    is_flag=True,
+    help="Compile generated Swift code and only save on success",
+)
 @click.pass_obj
 def generate(
     obj: dict,
@@ -66,6 +71,7 @@ def generate(
     spacing: Optional[int],
     indent: Optional[int],
     no_header: bool,
+    verify_build: bool,
 ) -> None:
     """Load ``LAYOUT_JSON`` and generate SwiftUI code via the API."""
 
@@ -102,6 +108,23 @@ def generate(
         resp = requests.post(f"{server}/factory/generate", json=payload, timeout=30)
         resp.raise_for_status()
         swift = resp.json().get("swift", "")
+
+        if verify_build:
+            try:
+                build_resp = requests.post(
+                    f"{server}/factory/test-build",
+                    json={"swift": swift},
+                    timeout=30,
+                )
+                build_resp.raise_for_status()
+                build_data = build_resp.json()
+                if not build_data.get("success"):
+                    click.echo(build_data.get("log", ""), err=True)
+                    raise SystemExit(1)
+            except requests.RequestException as exc:
+                click.echo(f"Build check failed: {exc}", err=True)
+                raise SystemExit(1)
+
         # Write to root GeneratedView.swift
         Path("GeneratedView.swift").write_text(swift)
         # Also copy into demo app targets if present

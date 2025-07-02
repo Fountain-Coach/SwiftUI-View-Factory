@@ -47,3 +47,33 @@ def test_generate_parses_options(monkeypatch):
             'indent': 4,
             'header_comment': False,
         }
+
+
+def test_generate_verify_build(monkeypatch):
+    runner = CliRunner()
+    calls = []
+
+    def fake_post(url, json=None, timeout=30):
+        calls.append(url)
+
+        class Resp:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                if url.endswith('/factory/generate'):
+                    return {"swift": "code"}
+                return {"success": True, "log": ""}
+
+        return Resp()
+
+    monkeypatch.setattr('cli.vi.requests.post', fake_post)
+    with runner.isolated_filesystem():
+        layout_path = 'layout.json'
+        with open(layout_path, 'w') as f:
+            json.dump({"type": "Text"}, f)
+        result = runner.invoke(cli, ['generate', layout_path, '--verify-build'])
+
+        assert result.exit_code == 0
+        assert calls[0].endswith('/factory/generate')
+        assert calls[1].endswith('/factory/test-build')
