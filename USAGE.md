@@ -5,7 +5,7 @@ Run CLI commands locally after installing dependencies:
 
 ```bash
 pip install -r requirements.txt
-python cli/vi.py interpret Images/example_app_mockup.jpeg
+python cli/vi.py interpret Images/example_app_mockup.jpeg > Layouts/example_app.layout.json
 python cli/vi.py generate Layouts/example_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
