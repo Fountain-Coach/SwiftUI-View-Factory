@@ -11,9 +11,13 @@ let package = Package(
     products: [
         .executable(name: "DragAndDropApp", targets: ["DragAndDropApp"])
     ],
+    dependencies: [
+        .package(path: "../SDK/ExampleSDK")
+    ],
     targets: [
         .executableTarget(
             name: "DragAndDropApp",
+            dependencies: ["ExampleSDK"],
             path: "Sources"
         )
     ]
