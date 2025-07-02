@@ -92,3 +92,7 @@ def test_generate_invalid_layout(monkeypatch):
 
         assert result.exit_code != 0
         assert 'Invalid layout' in result.output
+        assert 'Wrote error details' in result.output
+        with open('layout.error.log') as f:
+            err = json.load(f)
+        assert err['code'] == 'openai_error'

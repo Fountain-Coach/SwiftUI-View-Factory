@@ -88,6 +88,12 @@ def generate(
             if "code" in data and "structured" not in data:
                 msg = data.get("message", "Invalid layout file")
                 click.echo(f"Invalid layout: {msg}", err=True)
+                detail = data.get("detail")
+                if detail:
+                    click.echo(detail, err=True)
+                log_path = Path(layout_json).with_suffix(".error.log")
+                Path(log_path).write_text(json.dumps(data, indent=2))
+                click.echo(f"Wrote error details to {log_path}", err=True)
                 raise SystemExit(1)
             if "structured" in data:
                 data = data["structured"]
