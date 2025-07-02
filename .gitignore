@@ -51,6 +51,7 @@ ruff_cache/
 !DragAndDropApp/**/*.swift
 !DragAndDropApp/**/*.json
 !ExampleApp/**/*.swift
+!VisionDemoApp/**/*.swift
 !ExampleApp/Package.swift
 !SDK/**/Package.swift
 !SDK/**/*.swift

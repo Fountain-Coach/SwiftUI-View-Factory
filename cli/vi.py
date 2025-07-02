@@ -102,7 +102,17 @@ def generate(
         resp = requests.post(f"{server}/factory/generate", json=payload, timeout=30)
         resp.raise_for_status()
         swift = resp.json().get("swift", "")
+        # Write to root GeneratedView.swift
         Path("GeneratedView.swift").write_text(swift)
+        # Also copy into demo app targets if present
+        for path in (
+            "ExampleApp/Sources/GeneratedView.swift",
+            "VisionDemoApp/Sources/GeneratedView.swift",
+        ):
+            try:
+                Path(path).write_text(swift)
+            except FileNotFoundError:
+                continue
         click.echo("Saved GeneratedView.swift")
     except requests.RequestException as exc:
         click.echo(f"Request failed: {exc}", err=True)
