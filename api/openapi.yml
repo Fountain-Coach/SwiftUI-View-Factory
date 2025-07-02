@@ -92,6 +92,21 @@ paths:
                     spacing:
                       type: integer
                       description: Spacing value for stacks
+                    bold:
+                      type: boolean
+                      description: Apply bold styling to Text and Button views
+                    italic:
+                      type: boolean
+                      description: Apply italic styling to Text and Button views
+                    padding:
+                      type: integer
+                      description: Padding value applied to leaf views
+                    background_color:
+                      type: string
+                      description: Background color name
+                    corner_radius:
+                      type: integer
+                      description: Corner radius for leaf views
                 backend_hooks:
                   type: boolean
                   default: false

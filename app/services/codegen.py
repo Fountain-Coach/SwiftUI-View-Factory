@@ -36,6 +36,11 @@ def generate_swift(
         "font": None,
         "color": None,
         "spacing": None,
+        "bold": False,
+        "italic": False,
+        "padding": None,
+        "background_color": None,
+        "corner_radius": None,
         **(style or {}),
     }
 
@@ -44,6 +49,11 @@ def generate_swift(
     font_style = style.get("font")
     color_style = style.get("color")
     spacing = style.get("spacing")
+    bold = bool(style.get("bold", False))
+    italic = bool(style.get("italic", False))
+    padding = style.get("padding")
+    background_color = style.get("background_color")
+    corner_radius = style.get("corner_radius")
 
     lines: List[str] = []
 
@@ -74,6 +84,19 @@ def generate_swift(
 
     def escape(text: str) -> str:
         return text.replace('"', '\\"')
+
+    def add_modifiers(line: str) -> str:
+        if bold:
+            line += ".bold()"
+        if italic:
+            line += ".italic()"
+        if padding is not None:
+            line += f".padding({padding})"
+        if background_color:
+            line += f".background(Color.{background_color})"
+        if corner_radius:
+            line += f".cornerRadius({corner_radius})"
+        return line
 
     def render(node: LayoutNode, depth: int) -> List[str]:
         space = indent_unit * depth
@@ -133,12 +156,12 @@ def generate_swift(
                 line += ".foregroundColor(.gray)"
             elif color_style:
                 line += f".foregroundColor(.{color_style})"
-            out.append(line)
+            out.append(add_modifiers(line))
         elif t == "Image":
             name = escape(node.text or "")
-            out.append(f'{space}Image("{name}")')
+            out.append(add_modifiers(f'{space}Image("{name}")'))
         elif t == "Spacer":
-            out.append(f"{space}Spacer()")
+            out.append(add_modifiers(f"{space}Spacer()"))
         elif t == "Button":
             label = escape(node.text or "Button")
             line = f'{space}Button("{label}") {{}}'
@@ -148,11 +171,11 @@ def generate_swift(
                 line += f".font(.{font_style})"
             if color_style:
                 line += f".foregroundColor(.{color_style})"
-            out.append(line)
+            out.append(add_modifiers(line))
         elif t == "TextField":
             placeholder = escape(node.text or "")
             binding = node.id or "textField"
-            out.append(f'{space}TextField("{placeholder}", text: ${binding})')
+            out.append(add_modifiers(f'{space}TextField("{placeholder}", text: ${binding})'))
         elif t == "Conditional":
             cond = node.condition or "false"
             out.append(f"{space}if {cond} {{")

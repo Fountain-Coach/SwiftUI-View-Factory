@@ -58,6 +58,31 @@ def test_generate_endpoint_with_style():
     assert ".foregroundColor(.red)" in swift
 
 
+def test_generate_endpoint_extra_style():
+    client = TestClient(app)
+    layout = {"type": "Text", "text": "Styled"}
+    resp = client.post(
+        "/factory/generate",
+        json={
+            "layout": layout,
+            "style": {
+                "bold": True,
+                "italic": True,
+                "padding": 8,
+                "background_color": "green",
+                "corner_radius": 4,
+            },
+        },
+    )
+    assert resp.status_code == 200
+    swift = resp.json()["swift"]
+    assert ".bold()" in swift
+    assert ".italic()" in swift
+    assert ".padding(8)" in swift
+    assert ".background(Color.green)" in swift
+    assert ".cornerRadius(4)" in swift
+
+
 def test_generate_endpoint_backend_hooks():
     client = TestClient(app)
     layout = {"type": "Text", "text": "Hi"}

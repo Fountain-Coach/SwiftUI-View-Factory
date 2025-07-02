@@ -78,13 +78,20 @@ generated SwiftUI code. Example payload:
     "header_comment": false,
     "font": "title",
     "color": "red",
-    "spacing": 8
+    "spacing": 8,
+    "bold": true,
+    "italic": true,
+    "padding": 4,
+    "background_color": "blue",
+    "corner_radius": 6
   }
 }
 ```
 
 `font` and `color` apply to `Text` and `Button` views while `spacing` controls
-stack spacing. All fields are optional.
+stack spacing. Additional options like `bold`, `italic`, `padding`,
+`background_color`, and `corner_radius` modify leaf views. All fields are
+optional.
 
 ### Backend hooks
 Enable `backend_hooks` to insert an `.onAppear` block for analytics or network
