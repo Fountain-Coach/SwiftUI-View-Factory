@@ -1,0 +1,22 @@
+name: Smoke Test
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run smoke test
+        run: |
+          ./scripts/smoke_test.sh
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-logs
+          path: ci-logs
+      - name: Commit logs
+        run: |
+          ./scripts/store_logs.sh
