@@ -99,4 +99,3 @@ def test_generate_invalid_layout(monkeypatch):
         assert err['code'] == 'openai_error'
         with open('layout.openai.log') as f:
             assert 'foo' in f.read()
-
