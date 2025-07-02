@@ -1,0 +1,32 @@
+name: Build Views
+on:
+  workflow_dispatch:
+    inputs:
+      upload_dir:
+        description: 'Directory containing input MockViews'
+        required: false
+        default: 'upload'
+      download_dir:
+        description: 'Directory for generated SwiftUI views'
+        required: false
+        default: 'download'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build SwiftUI views
+        run: |
+          python scripts/build_views.py --upload "${{ github.event.inputs.upload_dir }}" --download "${{ github.event.inputs.download_dir }}"
+      - name: Upload generated views
+        uses: actions/upload-artifact@v3
+        with:
+          name: swiftui-views
+          path: ${{ github.event.inputs.download_dir }}
