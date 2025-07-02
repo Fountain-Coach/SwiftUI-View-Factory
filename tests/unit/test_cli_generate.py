@@ -77,3 +77,18 @@ def test_generate_verify_build(monkeypatch):
         assert result.exit_code == 0
         assert calls[0].endswith('/factory/generate')
         assert calls[1].endswith('/factory/test-build')
+
+
+def test_generate_invalid_layout(monkeypatch):
+    """Generating should fail when the JSON lacks a layout tree."""
+    runner = CliRunner()
+
+    with runner.isolated_filesystem():
+        layout_path = 'layout.json'
+        with open(layout_path, 'w') as f:
+            json.dump({'code': 'openai_error', 'message': 'failure'}, f)
+
+        result = runner.invoke(cli, ['generate', layout_path])
+
+        assert result.exit_code != 0
+        assert 'Invalid layout' in result.output
