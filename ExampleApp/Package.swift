@@ -17,7 +17,8 @@ let package = Package(
         .executableTarget(
             name: "ExampleApp",
             dependencies: ["ExampleSDK"],
-            path: "Sources"
+            path: ".",
+            sources: ["Sources/ExampleApp.swift", "../GeneratedView.swift"]
         )
     ]
 )
