@@ -13,6 +13,7 @@ def test_interpret_endpoint(monkeypatch):
             api_key=None, ChatCompletion=types.SimpleNamespace()
         )
     import openai
+    openai.api_key = "test"
 
     layout_data = {
         "structured": {

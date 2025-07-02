@@ -9,6 +9,8 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v3
 
@@ -28,27 +30,23 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Start API server
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 5
 
       - name: Wait for API to be ready
         run: |
-          for i in {1..10}; do
+          for i in {1..20}; do
             if curl --fail http://localhost:8000/docs > /dev/null 2>&1; then
               echo "API is up"
               exit 0
             fi
-            sleep 2
+            sleep 3
           done
           echo "API failed to start" >&2
           exit 1
 
       - name: Process new images
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             ./scripts/process_images.sh --latest

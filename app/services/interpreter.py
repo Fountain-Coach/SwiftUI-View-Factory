@@ -33,6 +33,9 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
     )
 
     try:
+        if not openai.api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set")
+
         # Read and base64 encode the uploaded image for GPT-4 vision models
         content = await file.read()
         encoded = base64.b64encode(content).decode("utf-8")
