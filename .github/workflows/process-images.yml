@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'Images/**'
+  workflow_dispatch:
 
 jobs:
   generate:
@@ -49,5 +50,9 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          ./scripts/process_images.sh
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ./scripts/process_images.sh --latest
+          else
+            ./scripts/process_images.sh
+          fi
 
