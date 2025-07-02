@@ -4,7 +4,8 @@ import PackageDescription
 let package = Package(
     name: "ExampleApp",
     platforms: [
-        .iOS(.v17)
+        .iOS(.v17),
+        .macOS(.v13)
     ],
     products: [
         .executable(name: "ExampleApp", targets: ["ExampleApp"])
