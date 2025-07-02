@@ -100,6 +100,7 @@ def generate(
                 detail = data.get("detail")
                 if detail:
                     click.echo(detail, err=True)
+
                 base = Path(layout_json).name
                 if base.endswith(".layout.json"):
                     base = base[:-12]
@@ -112,6 +113,7 @@ def generate(
                     openai_log = Path(layout_json).with_name(f"{base}.openai.log")
                     Path(openai_log).write_text(data["log"])
                     click.echo(f"Wrote OpenAI log to {openai_log}", err=True)
+
                 raise SystemExit(1)
             if "log" in data:
                 base = Path(layout_json).name
