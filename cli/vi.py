@@ -8,7 +8,9 @@ from typing import Optional
 import click
 import requests
 
-BASE_URL = "http://localhost:8000/api/v1"
+# Default API base URL. The FastAPI application does not include a versioned
+# prefix, so requests should target the root server address by default.
+BASE_URL = "http://localhost:8000"
 
 
 @click.group()
