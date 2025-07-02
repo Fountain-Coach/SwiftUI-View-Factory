@@ -1,4 +1,13 @@
 # service/interpreter.py
+"""Image interpreter service.
+
+This module communicates with OpenAI's API to convert UI mockup screenshots
+into structured layout trees.  All requests and responses are logged to the
+``Layouts`` directory so the API communication can be inspected.
+"""
+
+from __future__ import annotations
+
 from fastapi import UploadFile
 from app.models import LayoutNode, LayoutInterpretationResponse, ErrorResponse
 from pathlib import Path
@@ -10,11 +19,14 @@ import traceback
 from dotenv import load_dotenv
 import requests
 
+
+
+
 load_dotenv()
 
-# Ensure API key is loaded from environment if available
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# API key may come from environment or a simple secret service used in CI
 SECRET_SERVICE_URL = os.getenv("OPENAI_SECRET_SERVICE_URL")
+
 
 def _fetch_api_key() -> str | None:
     if not SECRET_SERVICE_URL:
@@ -29,14 +41,7 @@ def _fetch_api_key() -> str | None:
 
 
 async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | ErrorResponse:
-    """Interpret an uploaded UI mockup image into a layout tree.
-
-    The function attempts to use GPT-4 via the OpenAI API to analyse the
-    screenshot and return a JSON response matching the
-    ``LayoutInterpretationResponse`` schema. If anything fails (e.g. API key is
-    missing or the response cannot be parsed) a simple fallback layout is
-    returned instead.
-    """
+    """Interpret an uploaded UI mockup image using OpenAI."""
 
     fallback = LayoutInterpretationResponse(
         structured=LayoutNode(
@@ -49,9 +54,8 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
 
     log_data = {}
     try:
-        if not openai.api_key:
-            openai.api_key = _fetch_api_key() or None
-        if not openai.api_key:
+        api_key = os.getenv("OPENAI_API_KEY") or _fetch_api_key()
+        if not api_key:
             if SECRET_SERVICE_URL:
                 hint = (
                     "OPENAI_API_KEY is not set. Tried fetching from "
@@ -65,7 +69,8 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
                 )
             raise RuntimeError(hint)
 
-        # Read and base64 encode the uploaded image for GPT-4 vision models
+        client = openai.AsyncOpenAI(api_key=api_key)
+
         content = await file.read()
         encoded = base64.b64encode(content).decode("utf-8")
 
@@ -84,23 +89,20 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
                     {"type": "text", "text": "Convert this image into a layout tree."},
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": f"data:{file.content_type};base64,{encoded}"
-                        },
+                        "image_url": {"url": f"data:{file.content_type};base64,{encoded}"},
                     },
                 ],
             },
         ]
         log_data["request"] = messages
 
-        # Call OpenAI asynchronously; surface errors if any
-        response = await openai.ChatCompletion.acreate(
+        response = await client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
             max_tokens=500,
         )
-        log_data["response"] = response
-        content = response["choices"][0]["message"]["content"]
+        log_data["response"] = response.model_dump()
+        content = response.choices[0].message.content
     except Exception as exc:
         log_data["error"] = str(exc)
         log_json = json.dumps(log_data, indent=2, default=str)
@@ -115,9 +117,7 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
         )
 
     try:
-        # The model should return JSON. Attempt to parse it.
         data = json.loads(content)
-
         layout = LayoutNode.parse_obj(data.get("structured", {}))
         description = data.get("description")
         version = data.get("version", "layout-v1")
@@ -147,5 +147,4 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
             log=log_json,
         )
     except Exception:
-        # If anything goes wrong (no API key, parse error, etc.) return fallback
         return fallback
