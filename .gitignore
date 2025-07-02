@@ -48,14 +48,8 @@ ruff_cache/
 # Allow committed layout and image assets
 !Layouts/*.json
 !Images/*.jpeg
-!DragAndDropApp/**/*.swift
-!DragAndDropApp/**/*.json
-!ExampleApp/**/*.swift
-!VisionDemoApp/**/*.swift
-!ExampleApp/Package.swift
 !SDK/**/Package.swift
 !SDK/**/*.swift
-!draganddrop-starter/*.layout.json
 
 # Ignore generated UI files if any
 generated_ui/

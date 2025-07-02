@@ -13,9 +13,7 @@ This repository includes Swift packages that build macOS and iOS user interfaces
 Use `xcodebuild` directly to build the demo packages. Example invocations:
 
 ```bash
-xcodebuild \
-  -scheme ExampleApp \
-  -configuration Debug \
+xcodebuild -scheme YourApp -configuration Debug \
   -destination 'platform=iOS Simulator,name=iPhone 15' \
   build 2>&1 | tee build.log
 ```
@@ -25,8 +23,7 @@ The command pipes all compiler output to `build.log`. The exit code of `xcodebui
 ## Automating with a Script
 
 For convenience, create a small script (e.g. `scripts/build_app.sh`). It scans
-the `SDK` directory for local Swift packages, builds them first, then builds the
-demo applications:
+the `SDK` directory for local Swift packages and builds them:
 
 ```bash
 #!/bin/bash
@@ -43,8 +40,6 @@ if [ -d "SDK" ]; then
   done
 fi
 
-# Build the ExampleApp
-xcodebuild -scheme ExampleApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
 ```
 
 Run the script locally or within your CI pipeline. The output file `build.log` will contain compiler diagnostics. Any build failure stops the script due to `set -e`.
