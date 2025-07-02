@@ -1,6 +1,7 @@
 # service/interpreter.py
 from fastapi import UploadFile
 from app.models import LayoutNode, LayoutInterpretationResponse, ErrorResponse
+from pathlib import Path
 import openai
 import base64
 import json
@@ -46,6 +47,7 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
         version="layout-v1",
     )
 
+    log_data = {}
     try:
         if not openai.api_key:
             openai.api_key = _fetch_api_key() or None
@@ -78,6 +80,7 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
                 ],
             },
         ]
+        log_data["request"] = messages
 
         # Call OpenAI asynchronously; surface errors if any
         response = await openai.ChatCompletion.acreate(
@@ -85,12 +88,19 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
             messages=messages,
             max_tokens=500,
         )
+        log_data["response"] = response
         content = response["choices"][0]["message"]["content"]
     except Exception as exc:
+        log_data["error"] = str(exc)
+        log_json = json.dumps(log_data, indent=2, default=str)
+        Path("Layouts").mkdir(exist_ok=True)
+        log_path = Path("Layouts") / f"{Path(file.filename).stem}.openai.log"
+        log_path.write_text(log_json)
         return ErrorResponse(
             code="openai_error",
             message=f"OpenAI API error: {exc}",
             detail=traceback.format_exc(),
+            log=log_json,
         )
 
     try:
@@ -101,17 +111,29 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
         description = data.get("description")
         version = data.get("version", "layout-v1")
 
+        log_json = json.dumps(log_data, indent=2, default=str)
+        Path("Layouts").mkdir(exist_ok=True)
+        log_path = Path("Layouts") / f"{Path(file.filename).stem}.openai.log"
+        log_path.write_text(log_json)
+
         return LayoutInterpretationResponse(
             structured=layout,
             description=description,
             version=version,
+            log=log_json,
         )
 
     except json.JSONDecodeError as exc:
+        log_data["response"] = content
+        log_json = json.dumps(log_data, indent=2, default=str)
+        Path("Layouts").mkdir(exist_ok=True)
+        log_path = Path("Layouts") / f"{Path(file.filename).stem}.openai.log"
+        log_path.write_text(log_json)
         return ErrorResponse(
             code="invalid_response",
             message="Failed to parse response from OpenAI",
             detail=str(exc),
+            log=log_json,
         )
     except Exception:
         # If anything goes wrong (no API key, parse error, etc.) return fallback

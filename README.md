@@ -16,6 +16,11 @@ SwiftUI View Factory converts UI mockups or structured layout trees into product
 UI mockups belong in the `Images/` folder while structured layout JSON files
 reside in `Layouts/`. The CLI commands shown below reference these locations.
 
+Whenever the Factory interacts with OpenAI, the raw request and response are
+written to `Layouts/<name>.openai.log`. Any validation failures produce a
+corresponding `<name>.error.log` file. The `process_images.sh` helper script
+automatically commits these logs so they can be inspected later.
+
 ## Supported SwiftUI Components
 SwiftUI View Factory focuses on a curated subset of the framework. Only the
 following component types are recognized when interpreting or generating layout

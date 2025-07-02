@@ -51,7 +51,9 @@ done
 changes=$(git status --porcelain Layouts *.swift 2>/dev/null | wc -l || true)
 if [ "$changes" -gt 0 ]; then
   git add Layouts/*.layout.json 2>/dev/null || true
+  git add Layouts/*.openai.log 2>/dev/null || true
+  git add Layouts/*.error.log 2>/dev/null || true
   git add *.swift 2>/dev/null || true
-  git commit -m "chore: generate layouts and views from new images"
+  git commit -m "chore: generate layouts, views, and logs from new images"
   git push
 fi
