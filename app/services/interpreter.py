@@ -52,7 +52,18 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
         if not openai.api_key:
             openai.api_key = _fetch_api_key() or None
         if not openai.api_key:
-            raise RuntimeError("OPENAI_API_KEY is not set")
+            if SECRET_SERVICE_URL:
+                hint = (
+                    "OPENAI_API_KEY is not set. Tried fetching from "
+                    f"{SECRET_SERVICE_URL}/secret but no key was returned. "
+                    "Ensure the secret service is running and accessible."
+                )
+            else:
+                hint = (
+                    "OPENAI_API_KEY is not set. Provide the key via the "
+                    "environment variable or configure OPENAI_SECRET_SERVICE_URL."
+                )
+            raise RuntimeError(hint)
 
         # Read and base64 encode the uploaded image for GPT-4 vision models
         content = await file.read()
