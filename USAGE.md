@@ -5,15 +5,15 @@ Run CLI commands locally after installing dependencies:
 
 ```bash
 pip install -r requirements.txt
-python cli/vi.py interpret Images/demo_mockup.jpeg
-python cli/vi.py generate Layouts/demo_app.layout.json
+python cli/vi.py interpret Images/example_app_mockup.jpeg
+python cli/vi.py generate Layouts/example_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
 
 The `generate` command accepts additional flags to customize the output:
 
 ```bash
-python cli/vi.py generate Layouts/demo_app.layout.json \
+python cli/vi.py generate Layouts/example_app.layout.json \
   --name HomeView \
   --font title --color blue --spacing 8 \
   --indent 4 --no-header --backend-hooks
@@ -22,7 +22,7 @@ python cli/vi.py generate Layouts/demo_app.layout.json \
 Add `--verify-build` to compile the generated code before saving:
 
 ```bash
-python cli/vi.py generate Layouts/demo_app.layout.json --verify-build
+python cli/vi.py generate Layouts/example_app.layout.json --verify-build
 ```
 
 ## FastAPI
@@ -39,7 +39,7 @@ uvicorn app.main:app --reload
 
 ### CLI
 ```bash
-docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/demo_mockup.jpeg
+docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/example_app_mockup.jpeg
 ```
 
 ### FastAPI

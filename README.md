@@ -50,13 +50,13 @@ the CLI to interpret the image and generate the SwiftUI view. The resulting
 ### CLI
 ```bash
 pip install -r requirements.txt
-python cli/vi.py interpret Images/demo_mockup.jpeg
-python cli/vi.py generate Layouts/demo_app.layout.json
+python cli/vi.py interpret Images/example_app_mockup.jpeg
+python cli/vi.py generate Layouts/example_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
 Add `--verify-build` when generating to ensure the Swift code compiles:
 ```bash
-python cli/vi.py generate Layouts/demo_app.layout.json --verify-build
+python cli/vi.py generate Layouts/example_app.layout.json --verify-build
 ```
 
 ### Local FastAPI launch
@@ -130,7 +130,7 @@ docker build -t swiftui-factory .
 Run the CLI using Docker:
 
 ```bash
-docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/demo_mockup.jpeg
+docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/example_app_mockup.jpeg
 ```
 
 Run the FastAPI server:
