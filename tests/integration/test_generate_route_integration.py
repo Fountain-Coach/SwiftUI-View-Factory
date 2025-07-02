@@ -7,7 +7,7 @@ from app.main import app
 
 def test_generate_endpoint():
     client = TestClient(app)
-    layout = json.loads(Path("Layouts/example_app.layout.json").read_text())
+    layout = json.loads(Path("Layouts/example_app.layout.json").read_text())["structured"]
     resp = client.post("/factory/generate", json={"layout": layout})
     assert resp.status_code == 200
     swift = resp.json()["swift"]
