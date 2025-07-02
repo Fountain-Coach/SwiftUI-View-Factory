@@ -4,6 +4,24 @@ info:
   description: |
     A standalone service that converts UI mockups or structured layout trees
     into production-grade SwiftUI views, optionally wired to backend SDKs.
+
+    The API supports a curated subset of SwiftUI components. Supported
+    ``LayoutNode.type`` values are:
+
+    - ``VStack``
+    - ``HStack``
+    - ``Text``
+    - ``Image``
+    - ``Button``
+    - ``Spacer``
+    - ``ScrollView``
+    - ``ZStack``
+    - ``Conditional``
+    - ``TextField``
+    - ``Form``
+    - ``List``
+    - ``Section``
+    - ``NavigationStack``
   version: 1.2.0
 
 servers:
