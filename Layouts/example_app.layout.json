@@ -1,98 +1,13 @@
 {
-  "layout": {
-    "type": "HStack",
+  "structured": {
+    "type": "VStack",
+    "id": "root",
+    "tag": "example",
     "children": [
-      {
-        "type": "VStack",
-        "id": "leftScreen",
-        "role": "screen",
-        "children": [
-          {
-            "type": "HStack",
-            "id": "header",
-            "role": "header",
-            "children": [
-              { "type": "Image", "tag": "status_indicator" },
-              { "type": "Spacer" },
-              { "type": "Image", "tag": "menu_icon" }
-            ]
-          },
-          {
-            "type": "Spacer",
-            "role": "separator",
-            "tag": "divider"
-          },
-          {
-            "type": "Spacer",
-            "id": "contentArea"
-          },
-          {
-            "type": "HStack",
-            "id": "footer",
-            "role": "footer",
-            "children": [
-              { "type": "TextField", "tag": "input_bar" },
-              { "type": "Text", "text": "|", "tag": "text_cursor" }
-            ]
-          }
-        ]
-      },
-      {
-        "type": "VStack",
-        "id": "rightScreen",
-        "role": "screen",
-        "children": [
-          {
-            "type": "HStack",
-            "id": "header",
-            "role": "header",
-            "children": [
-              { "type": "Image", "tag": "status_indicator" },
-              { "type": "Spacer" },
-              { "type": "Image", "tag": "menu_icon" }
-            ]
-          },
-          {
-            "type": "Spacer",
-            "role": "separator",
-            "tag": "divider"
-          },
-          {
-            "type": "VStack",
-            "id": "contentArea",
-            "role": "content",
-            "children": [
-              { "type": "Image", "tag": "headline_bar" },
-              {
-                "type": "HStack",
-                "id": "buttonRow",
-                "role": "button_row",
-                "children": [
-                  { "type": "Image", "tag": "button1" },
-                  { "type": "Image", "tag": "button2" }
-                ]
-              },
-              { "type": "Image", "tag": "subheader_line" }
-            ]
-          },
-          { "type": "Spacer" },
-          {
-            "type": "HStack",
-            "id": "footer",
-            "role": "footer",
-            "children": [
-              { "type": "TextField", "tag": "input_bar" },
-              { "type": "Text", "text": "|", "tag": "text_cursor" }
-            ]
-          }
-        ]
-      }
+      { "type": "Text", "text": "Welcome", "role": "header" },
+      { "type": "Image", "text": "logo" },
+      { "type": "Button", "text": "Get Started", "role": "submit" }
     ]
   },
-  "name": "TwoPanelMockupView",
-  "style": {
-    "indent": 2,
-    "header_comment": true,
-    "spacing": 20
-  }
+  "version": "layout-v1"
 }

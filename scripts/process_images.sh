@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+# Generate layout JSON and Swift views for images in the Images directory.
+# Requires the API server to be running and OPENAI_API_KEY if using OpenAI.
+
+for img in Images/*.{png,jpg,jpeg,JPG,JPEG,PNG}; do
+  [ -e "$img" ] || continue
+  base=$(basename "$img")
+  name="${base%.*}"
+  layout="Layouts/${name}.layout.json"
+  view="${name}.swift"
+
+  if [ ! -f "$layout" ]; then
+    echo "Interpreting $img"
+    python cli/vi.py interpret "$img" > "$layout"
+  fi
+
+  if [ ! -f "$view" ]; then
+    echo "Generating Swift for $layout"
+    python cli/vi.py generate "$layout"
+    if [ -f GeneratedView.swift ]; then
+      mv GeneratedView.swift "$view"
+    fi
+  fi
+
+done
+
+# Commit generated files if anything changed
+changes=$(git status --porcelain Layouts *.swift 2>/dev/null | wc -l || true)
+if [ "$changes" -gt 0 ]; then
+  git add Layouts/*.layout.json 2>/dev/null || true
+  git add *.swift 2>/dev/null || true
+  git commit -m "chore: generate layouts and views from new images"
+  git push
+fi
