@@ -1,8 +1,0 @@
-{
-  "type": "ScrollView",
-  "children": [
-    { "type": "Text", "text": "Item 1" },
-    { "type": "Text", "text": "Item 2" },
-    { "type": "Text", "text": "Item 3" }
-  ]
-}

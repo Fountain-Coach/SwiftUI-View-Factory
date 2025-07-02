@@ -2,19 +2,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "iOSDemoApp",
+    name: "ExampleApp",
     platforms: [
         .iOS(.v17)
     ],
     products: [
-        .executable(name: "iOSDemoApp", targets: ["iOSDemoApp"])
+        .executable(name: "ExampleApp", targets: ["ExampleApp"])
     ],
     dependencies: [
         .package(path: "../SDK/ExampleSDK")
     ],
     targets: [
         .executableTarget(
-            name: "iOSDemoApp",
+            name: "ExampleApp",
             dependencies: ["ExampleSDK"],
             path: "Sources"
         )

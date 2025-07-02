@@ -1,1 +1,0 @@
-# mockup5: ZStack with background image and overlay text.

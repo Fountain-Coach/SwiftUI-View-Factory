@@ -45,11 +45,13 @@ ruff_cache/
 *.json
 *.bin
 
-# Allow committed example JSON files
-!examples/*.layout.json
-!examples/*.swift
+# Allow committed layout and image assets
+!Layouts/*.json
+!Images/*.jpeg
 !DragAndDropApp/**/*.swift
 !DragAndDropApp/**/*.json
+!ExampleApp/**/*.swift
+!ExampleApp/Package.swift
 !SDK/**/Package.swift
 !SDK/**/*.swift
 !draganddrop-starter/*.layout.json

@@ -31,9 +31,9 @@ def test_interpret_endpoint(monkeypatch):
     monkeypatch.setattr(openai.ChatCompletion, "acreate", fake_acreate, raising=False)
 
     client = TestClient(app)
-    with Path("examples/mockup1.jpeg").open("rb") as f:
+    with Path("Images/demo_mockup.jpeg").open("rb") as f:
         resp = client.post(
-            "/factory/interpret", files={"file": ("mockup1.jpeg", f, "image/jpeg")}
+            "/factory/interpret", files={"file": ("demo_mockup.jpeg", f, "image/jpeg")}
         )
 
     assert resp.status_code == 200

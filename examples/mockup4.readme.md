@@ -1,1 +1,0 @@
-# mockup4: ScrollView with 3 Text items.
