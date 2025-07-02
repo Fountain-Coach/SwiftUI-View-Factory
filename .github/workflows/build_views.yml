@@ -26,7 +26,7 @@ jobs:
         run: |
           python scripts/build_views.py --upload "${{ github.event.inputs.upload_dir }}" --download "${{ github.event.inputs.download_dir }}"
       - name: Upload generated views
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: swiftui-views
           path: ${{ github.event.inputs.download_dir }}
