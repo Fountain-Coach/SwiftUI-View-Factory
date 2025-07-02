@@ -3,7 +3,7 @@ from app.models.layout import LayoutNode
 
 
 def test_parse_layout_json():
-    with open("examples/mockup1.layout.json") as f:
+    with open("Layouts/demo_app.layout.json") as f:
         data = json.load(f)
     layout = LayoutNode(**data)
     assert layout.type == "VStack"

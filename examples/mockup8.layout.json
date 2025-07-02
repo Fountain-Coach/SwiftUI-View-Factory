@@ -1,6 +1,0 @@
-{
-  "type": "VStack",
-  "children": [
-    {"type": "Text", "text": "Hooked"}
-  ]
-}

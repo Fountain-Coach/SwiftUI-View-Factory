@@ -14,21 +14,9 @@ Use `xcodebuild` directly to build the demo packages. Example invocations:
 
 ```bash
 xcodebuild \
-  -scheme DragAndDropApp \
-  -configuration Debug \
-  -destination 'platform=macOS' \
-  build 2>&1 | tee build.log
-
-xcodebuild \
-  -scheme iOSDemoApp \
+  -scheme ExampleApp \
   -configuration Debug \
   -destination 'platform=iOS Simulator,name=iPhone 15' \
-  build 2>&1 | tee build.log
-
-xcodebuild \
-  -scheme VisionDemoApp \
-  -configuration Debug \
-  -destination 'platform=visionOS Simulator,name=Apple Vision Pro' \
   build 2>&1 | tee build.log
 ```
 
@@ -55,10 +43,8 @@ if [ -d "SDK" ]; then
   done
 fi
 
-# Build the demo apps
-xcodebuild -scheme DragAndDropApp -configuration Debug -destination 'platform=macOS' build 2>&1 | tee -a "$LOG"
-xcodebuild -scheme iOSDemoApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
-xcodebuild -scheme VisionDemoApp -configuration Debug -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build 2>&1 | tee -a "$LOG"
+# Build the ExampleApp
+xcodebuild -scheme ExampleApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
 ```
 
 Run the script locally or within your CI pipeline. The output file `build.log` will contain compiler diagnostics. Any build failure stops the script due to `set -e`.

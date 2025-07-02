@@ -4,7 +4,7 @@ import ExampleSDK
 #endif
 
 @main
-struct iOSDemoApp: App {
+struct ExampleApp: App {
 #if canImport(ExampleSDK)
     private let sdk = ExampleClient()
 #endif

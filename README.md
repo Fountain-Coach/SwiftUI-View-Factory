@@ -12,6 +12,10 @@ SwiftUI View Factory converts UI mockups or structured layout trees into product
 - Includes golden test suite for reproducibility
 - Designed for Codex orchestration with behavior-driven examples
 
+## Input Directories
+UI mockups belong in the `Images/` folder while structured layout JSON files
+reside in `Layouts/`. The CLI commands shown below reference these locations.
+
 ## Supported SwiftUI Components
 SwiftUI View Factory focuses on a curated subset of the framework. Only the
 following component types are recognized when interpreting or generating layout
@@ -36,24 +40,18 @@ NavigationStack
 This list matches the `LayoutNode.type` enumeration in the API schema. Views
 outside this set are ignored.
 
-## 🧪 Golden Examples
-- **mockup1** – `VStack` with welcome text, logo image and a button
-- **mockup2** – `VStack` showing `role` and `tag` metadata on text and button
-- **mockup3** – conditional rendering based on `userIsLoggedIn`
-- **mockup4** – `ScrollView` listing three text items
-- **mockup5** – `ZStack` with a background image and overlay text
-- **mockup6** – single `TextField` bound to a state variable
-- **mockup7** – grouped input fields inside a `Form`
-- **mockup8** – demonstrates backend hooks via `onAppear`
-- **mockup9** – `List` with three rows
-- **mockup10** – `NavigationStack` linking to a detail view
+## 🧪 Example App
+The repository ships with a single example workflow. A demo mockup image lives
+under `Images/` and the corresponding layout description under `Layouts/`. Use
+the CLI to interpret the image and generate the SwiftUI view. The resulting
+`GeneratedView` is displayed inside the `ExampleApp` Xcode project.
 
 ## 🚀 Getting Started
 ### CLI
 ```bash
 pip install -r requirements.txt
-python cli/vi.py interpret path/to/mockup.png
-python cli/vi.py generate examples/mockup1.layout.json
+python cli/vi.py interpret Images/demo_mockup.jpeg
+python cli/vi.py generate Layouts/demo_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
 
@@ -128,7 +126,7 @@ docker build -t swiftui-factory .
 Run the CLI using Docker:
 
 ```bash
-docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret examples/mockup1.jpeg
+docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/demo_mockup.jpeg
 ```
 
 Run the FastAPI server:

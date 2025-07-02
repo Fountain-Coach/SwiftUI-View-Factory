@@ -1,8 +1,0 @@
-{
-  "type": "List",
-  "children": [
-    {"type": "Text", "text": "Row 1"},
-    {"type": "Text", "text": "Row 2"},
-    {"type": "Text", "text": "Row 3"}
-  ]
-}
