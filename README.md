@@ -42,15 +42,15 @@ outside this set are ignored.
 
 ## 🧪 Example App
 The repository ships with a single example workflow. A demo mockup image lives
-under `Images/` and the corresponding layout description under `Layouts/`. Use
-the CLI to interpret the image and generate the SwiftUI view. The resulting
-`GeneratedView` is displayed inside the `ExampleApp` Xcode project.
+under `Images/`. Use the CLI to interpret the image and generate the SwiftUI
+view. The resulting `GeneratedView` is displayed inside the `ExampleApp` Xcode
+project.
 
 ## 🚀 Getting Started
 ### CLI
 ```bash
 pip install -r requirements.txt
-python cli/vi.py interpret Images/example_app_mockup.jpeg
+python cli/vi.py interpret Images/example_app_mockup.jpeg > Layouts/example_app.layout.json
 python cli/vi.py generate Layouts/example_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
@@ -130,7 +130,7 @@ docker build -t swiftui-factory .
 Run the CLI using Docker:
 
 ```bash
-docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/example_app_mockup.jpeg
+docker run --rm -v $PWD:/app -e OPENAI_API_KEY=... swiftui-factory interpret Images/example_app_mockup.jpeg > Layouts/example_app.layout.json
 ```
 
 Run the FastAPI server:
