@@ -132,45 +132,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /factory/test-build:
-    post:
-      summary: Test SwiftUI build output
-      description: Accepts Swift source and validates whether it compiles into an executable or framework.
-      operationId: testSwiftBuild
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                swift:
-                  type: string
-                output_binary:
-                  type: boolean
-                  default: false
-                  description: If true, returns path to compiled artifact.
+
+  /secret:
+    get:
+      summary: Retrieve the OpenAI API key
+      description: |
+        Returns the API key used when communicating with OpenAI. In local
+        development the key is loaded from a `.env` file. In production the
+        container expects the `OPENAI_API_KEY` environment variable to be set.
+      operationId: getOpenAIKey
       responses:
         '200':
-          description: Build result
+          description: API key response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  log:
-                    type: string
-                  artifact:
-                    type: string
-                    nullable: true
-        '422':
-          description: Build error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/OpenAIKeyResponse'
 
   /secret:
     get:
@@ -286,6 +263,9 @@ components:
 
     OpenAIKeyResponse:
       type: object
+      required:
+        - api_key
       properties:
         api_key:
           type: string
+          example: sk-abc123
