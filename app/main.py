@@ -18,6 +18,7 @@ def custom_openapi():
         schema = yaml.safe_load(f)
     return schema
 
+
 app.openapi = custom_openapi
 
 
@@ -53,8 +54,14 @@ class OpenAIKeyResponse(BaseModel):
 @app.post("/factory/interpret", response_model=LayoutInterpretationResponse)
 async def interpret_layout(file: UploadFile = File(...)):
     # Placeholder logic that returns a static layout
-    root_node = LayoutNode(type="VStack", children=[LayoutNode(type="Text", text="Hello")])
-    return LayoutInterpretationResponse(structured=root_node, description="Simple VStack with Hello text", version="layout-v1")
+    root_node = LayoutNode(
+        type="VStack", children=[LayoutNode(type="Text", text="Hello")]
+    )
+    return LayoutInterpretationResponse(
+        structured=root_node,
+        description="Simple VStack with Hello text",
+        version="layout-v1",
+    )
 
 
 class GenerateRequest(BaseModel):
@@ -67,7 +74,7 @@ class GenerateRequest(BaseModel):
 @app.post("/factory/generate")
 async def generate_swiftui_view(data: GenerateRequest):
     name = data.name or "GeneratedView"
-    swift = f"struct {name}: View {{\n    var body: some View {{\n        Text(\"Hello\")\n    }}\n}}"
+    swift = f'struct {name}: View {{\n    var body: some View {{\n        Text("Hello")\n    }}\n}}'
     return {"swift": swift}
 
 
