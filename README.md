@@ -157,6 +157,9 @@ docker compose up
 ```
 The Factory container retrieves the key from `http://secret-service:8001/secret`.
 
+Ensure `OPENAI_API_KEY` is set either in `.env` or served from the secret
+service so the interpreter can communicate with the real OpenAI API.
+
 See [USAGE.md](USAGE.md) for more details.
 
 ## ✅ CI
