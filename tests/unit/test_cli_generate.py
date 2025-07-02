@@ -86,13 +86,17 @@ def test_generate_invalid_layout(monkeypatch):
     with runner.isolated_filesystem():
         layout_path = 'layout.json'
         with open(layout_path, 'w') as f:
-            json.dump({'code': 'openai_error', 'message': 'failure'}, f)
+            json.dump({'code': 'openai_error', 'message': 'failure', 'log': 'foo'}, f)
 
         result = runner.invoke(cli, ['generate', layout_path])
 
         assert result.exit_code != 0
         assert 'Invalid layout' in result.output
         assert 'Wrote error details' in result.output
+        assert 'Wrote OpenAI log' in result.output
         with open('layout.error.log') as f:
             err = json.load(f)
         assert err['code'] == 'openai_error'
+        with open('layout.openai.log') as f:
+            assert 'foo' in f.read()
+

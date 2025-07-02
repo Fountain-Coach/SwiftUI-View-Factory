@@ -187,6 +187,9 @@ components:
         version:
           type: string
           example: "layout-v1"
+        log:
+          type: string
+          description: Raw communication log between the service and OpenAI
 
     LayoutNode:
       type: object
@@ -259,4 +262,8 @@ components:
           example: One or more fields are invalid.
         detail:
           type: string
-          nullable: true# Insert the finalized OpenAPI spec here
+          nullable: true
+        log:
+          type: string
+          nullable: true
+          description: Raw communication log if available
