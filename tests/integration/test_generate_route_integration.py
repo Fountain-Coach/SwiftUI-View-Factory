@@ -149,5 +149,6 @@ def test_generate_endpoint_indent_and_header():
     assert resp.status_code == 200
     swift = resp.json()["swift"]
     lines = swift.splitlines()
-    assert lines[0].startswith("struct GeneratedView")
-    assert lines[1].startswith("    var body")
+    assert lines[0] == "import SwiftUI"
+    assert lines[1].startswith("struct GeneratedView")
+    assert lines[2].startswith("    var body")
