@@ -40,11 +40,11 @@ NavigationStack
 This list matches the `LayoutNode.type` enumeration in the API schema. Views
 outside this set are ignored.
 
-## 🧪 Example App
+## 🧪 Example Workflow
 The repository ships with a single example workflow. A demo mockup image lives
 under `Images/` and the corresponding layout description under `Layouts/`. Use
 the CLI to interpret the image and generate the SwiftUI view. The resulting
-`GeneratedView` is displayed inside the `ExampleApp` Xcode project.
+`GeneratedView.swift` can be added to your own Xcode project.
 
 ## 🚀 Getting Started
 ### CLI

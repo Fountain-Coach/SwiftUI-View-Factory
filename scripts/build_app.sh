@@ -14,8 +14,6 @@ if [ -d "SDK" ]; then
   done
 fi
 
-# Build the ExampleApp
-xcodebuild -scheme ExampleApp -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' build 2>&1 | tee -a "$LOG"
 
 # Commit updated build log if it changed
 if [ -n "$(git status --porcelain $LOG)" ]; then
