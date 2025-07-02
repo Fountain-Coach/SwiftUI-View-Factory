@@ -7,11 +7,24 @@ import json
 import os
 import traceback
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
 # Ensure API key is loaded from environment if available
 openai.api_key = os.getenv("OPENAI_API_KEY")
+SECRET_SERVICE_URL = os.getenv("OPENAI_SECRET_SERVICE_URL")
+
+def _fetch_api_key() -> str | None:
+    if not SECRET_SERVICE_URL:
+        return None
+    try:
+        resp = requests.get(f"{SECRET_SERVICE_URL}/secret", timeout=5)
+        if resp.status_code == 200:
+            return resp.json().get("api_key")
+    except Exception:
+        return None
+    return None
 
 
 async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | ErrorResponse:
@@ -34,6 +47,8 @@ async def interpret_image(file: UploadFile) -> LayoutInterpretationResponse | Er
     )
 
     try:
+        if not openai.api_key:
+            openai.api_key = _fetch_api_key() or None
         if not openai.api_key:
             raise RuntimeError("OPENAI_API_KEY is not set")
 

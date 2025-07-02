@@ -139,6 +139,19 @@ Run the FastAPI server:
 docker run -p 8000:8000 -e OPENAI_API_KEY=... swiftui-factory uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
+### OpenAI Secret Service
+
+For local development the `docker-compose.yml` file spins up two containers:
+the main Factory API and an **OpenAI Secret Service** responsible for
+providing the `OPENAI_API_KEY` at runtime. Populate `.env` with your key before
+running:
+
+```bash
+cp .env.example .env  # edit with your key
+docker compose up
+```
+The Factory container retrieves the key from `http://secret-service:8001/secret`.
+
 See [USAGE.md](USAGE.md) for more details.
 
 ## ✅ CI
