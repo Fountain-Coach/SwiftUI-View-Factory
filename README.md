@@ -54,6 +54,10 @@ python cli/vi.py interpret Images/demo_mockup.jpeg
 python cli/vi.py generate Layouts/demo_app.layout.json
 python cli/vi.py test GeneratedView.swift
 ```
+Add `--verify-build` when generating to ensure the Swift code compiles:
+```bash
+python cli/vi.py generate Layouts/demo_app.layout.json --verify-build
+```
 
 ### Local FastAPI launch
 ```bash

@@ -19,6 +19,12 @@ python cli/vi.py generate Layouts/demo_app.layout.json \
   --indent 4 --no-header --backend-hooks
 ```
 
+Add `--verify-build` to compile the generated code before saving:
+
+```bash
+python cli/vi.py generate Layouts/demo_app.layout.json --verify-build
+```
+
 ## FastAPI
 Launch the API locally with Uvicorn:
 
