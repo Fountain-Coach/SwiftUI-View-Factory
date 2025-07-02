@@ -25,15 +25,28 @@ info:
   version: 1.2.0
 
 servers:
-  # The FastAPI server is mounted at the root path when run locally, so the
-  # specification should reflect the unversioned base URL.
+  # The FastAPI server is mounted at the root path when run locally, so the specification should reflect the unversioned base URL.
   - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.fountain.coach/v1
+    description: Production v1
+
+tags:
+  - name: Factory
+    description: Convert mockups and layout trees into SwiftUI views
+  - name: Secrets
+    description: Internal endpoints for managing API secrets
+
+security:
+  - BearerAuth: []
 
 paths:
   /factory/interpret:
     post:
       summary: Interpret UI mockup image
       description: Upload a UI screenshot or sketch to generate a structured layout tree.
+      tags:
+        - Factory
       operationId: interpretLayout
       requestBody:
         required: true
@@ -63,6 +76,8 @@ paths:
     post:
       summary: Generate SwiftUI view code
       description: Converts a structured layout into a SwiftUI `View` struct with optional backend wiring.
+      tags:
+        - Factory
       operationId: generateSwiftUIView
       requestBody:
         required: true
@@ -125,6 +140,12 @@ paths:
                 properties:
                   swift:
                     type: string
+                    example: |
+                      struct GeneratedView: View {
+                          var body: some View {
+                              Text("Hello")
+                          }
+                      }
         '422':
           description: Validation Error
           content:
@@ -140,6 +161,8 @@ paths:
         Returns the API key used when communicating with OpenAI. In local
         development the key is loaded from a `.env` file. In production the
         container expects the `OPENAI_API_KEY` environment variable to be set.
+      tags:
+        - Secrets
       operationId: getOpenAIKey
       responses:
         '200':
@@ -149,23 +172,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/OpenAIKeyResponse'
 
-  /secret:
-    get:
-      summary: Retrieve the OpenAI API key
-      description: |
-        Returns the API key used when communicating with OpenAI. In local
-        development the key is loaded from a `.env` file. In production the
-        container expects the `OPENAI_API_KEY` environment variable to be set.
-      operationId: getOpenAIKey
-      responses:
-        '200':
-          description: API key response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OpenAIKeyResponse'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     LayoutInterpretationResponse:
       type: object
@@ -183,6 +196,14 @@ components:
         log:
           type: string
           description: Raw communication log between the service and OpenAI
+      example:
+        structured:
+          type: VStack
+          children:
+            - type: Text
+              text: Hello
+        description: Simple VStack with Hello text
+        version: layout-v1
 
     LayoutNode:
       type: object
@@ -240,6 +261,11 @@ components:
         else:
           $ref: '#/components/schemas/LayoutNode'
           nullable: true
+      example:
+        type: VStack
+        children:
+          - type: Text
+            text: Hello
 
     ErrorResponse:
       type: object
