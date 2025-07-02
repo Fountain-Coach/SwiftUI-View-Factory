@@ -38,29 +38,9 @@ jobs:
           done
       - name: Generate SwiftUI views via API
         run: |
-          python - <<'EOF'
-          import os, json, glob, os.path, httpx
-
-          upload = os.environ["UPLOAD_DIR"]
-          download = os.environ["DOWNLOAD_DIR"]
-          os.makedirs(download, exist_ok=True)
-
-          for path in glob.glob(os.path.join(upload, "*.json")):
-              with open(path) as f:
-                  layout = json.load(f)
-              name = os.path.splitext(os.path.basename(path))[0]
-              resp = httpx.post(
-                  "http://localhost:8000/factory/generate",
-                  json={"layout": layout, "name": name},
-              )
-              resp.raise_for_status()
-              swift = resp.json()["swift"]
-              with open(os.path.join(download, f"{name}.swift"), "w") as out:
-                  out.write(swift)
-          EOF
-        env:
-          UPLOAD_DIR: ${{ github.event.inputs.upload_dir }}
-          DOWNLOAD_DIR: ${{ github.event.inputs.download_dir }}
+          python scripts/build_views.py \
+            --upload "${{ github.event.inputs.upload_dir }}" \
+            --download "${{ github.event.inputs.download_dir }}"
       - name: Stop API server
         if: always()
         run: |
