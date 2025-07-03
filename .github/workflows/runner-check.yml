@@ -1,15 +1,21 @@
-name: Verify Self-Hosted Runner
+name: Verify Hetzner Runner (FountainAI)
 
 on:
   workflow_dispatch:
 
 jobs:
-  verify:
-    runs-on: self-hosted
+  test-runner:
+    runs-on:
+      group: Default
+      labels: [self-hosted]
+      name: fountainai-server
+
     steps:
-      - name: Check Environment
+      - name: Confirm Runner Identity
         run: |
-          echo "Runner: $(hostname)"
-          uname -a
-          docker version
-          docker compose version
+          echo "🔥 Running on: $(hostname)"
+          echo "✅ Kernel: $(uname -a)"
+          echo "🛠 Docker version:"
+          docker version || echo "🚨 Docker NOT working"
+          echo "🧪 Docker Compose version:"
+          docker compose version || echo "🚨 Compose NOT working"
