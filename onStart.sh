@@ -1,32 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-# === 🧩 CONFIGURATION ===
-: "${HETZNER_USER:=codex}"
-: "${REMOTE_PATH:=/home/codex/SwiftUI-View-Factory}"
-: "${REPO_URL:=https://github.com/Fountain-Coach/SwiftUI-View-Factory.git}"
-: "${HETZNER_PORT:=8000}"
-: "${HETZNER_HEALTH_PATH:=/health}"
+# === 🧩 CONFIGURATION (Public + Simple) ===
+HETZNER_IP="120.148.95.115"  # ← your public Hetzner IP here
+HETZNER_USER="codex"
+REMOTE_PATH="/home/codex/SwiftUI-View-Factory"
+REPO_URL="https://github.com/Fountain-Coach/SwiftUI-View-Factory.git"
+HETZNER_PORT="8000"
+HETZNER_HEALTH_PATH="/health"
 KEY_PATH="$HOME/.ssh/id_codex"
 KNOWN_HOSTS="$HOME/.ssh/known_hosts"
 MAX_RETRIES=10
 WAIT_SECONDS=2
-
-# === ✅ Check for HETZNER_IP safely (no crash) ===
-if [[ -z "${HETZNER_IP:-}" ]]; then
-  echo "❌ ERROR: HETZNER_IP is not set. You must define it as a Codex secret."
-  exit 1
-fi
-
-# === 🔐 EXPORT HETZNER_IP FOR ALL FUTURE SHELLS ===
-echo "💾 Exporting HETZNER_IP to shell profiles..."
-for file in ~/.bashrc ~/.profile ~/.zshrc; do
-  if [[ -f "$file" ]]; then
-    sed -i '/^export HETZNER_IP=/d' "$file" || true
-  fi
-  echo "export HETZNER_IP=$HETZNER_IP" >> "$file"
-done
-export HETZNER_IP
 
 # === 🔑 Generate ephemeral SSH key ===
 echo "🔐 [1/6] Generating SSH key..."
@@ -40,36 +25,36 @@ ssh-keyscan -H "$HETZNER_IP" >> "$KNOWN_HOSTS" 2>/dev/null
 echo "🚪 [3/6] Copying public key to Hetzner authorized_keys..."
 ssh-copy-id -i "${KEY_PATH}.pub" "$HETZNER_USER@$HETZNER_IP"
 
-# === 🛰️ Connect to Hetzner & sync code ===
-echo "📡 [4/6] Connecting to Hetzner to clone/pull repo..."
+# === 🛰️ Sync Repo on Hetzner ===
+echo "📡 [4/6] Connecting to Hetzner to update code..."
 ssh -i "$KEY_PATH" "$HETZNER_USER@$HETZNER_IP" bash <<EOF
 set -e
 
 if [ ! -d "$REMOTE_PATH" ]; then
-  echo "🆕 Cloning repository from $REPO_URL"
+  echo "🆕 Cloning repo..."
   git clone "$REPO_URL" "$REMOTE_PATH"
 else
-  echo "🔄 Pulling latest updates from main..."
+  echo "🔄 Pulling latest changes..."
   cd "$REMOTE_PATH"
   git reset --hard
   git pull origin main
 fi
 
 cd "$REMOTE_PATH"
-echo "🐳 Running Docker Compose..."
+echo "🐳 Starting Docker Compose..."
 docker compose up -d --build
 
-echo "✅ Hetzner remote environment is live."
+echo "✅ Hetzner Docker environment is up."
 EOF
 
-# === 🩺 HEALTH CHECK (curl-based) ===
+# === 🩺 HEALTH CHECK ===
 echo "🩺 [5/6] Checking health of service..."
 
 SERVICE_URL="http://${HETZNER_IP}:${HETZNER_PORT}${HETZNER_HEALTH_PATH}"
 
 for i in $(seq 1 $MAX_RETRIES); do
   if curl -sSf "$SERVICE_URL" > /dev/null; then
-    echo "✅ Service is up at $SERVICE_URL"
+    echo "✅ Service is healthy at $SERVICE_URL"
     break
   else
     echo "⏳ Waiting... ($i/$MAX_RETRIES)"
@@ -83,4 +68,4 @@ if ! curl -sSf "$SERVICE_URL" > /dev/null; then
 fi
 
 # === ✅ DONE ===
-echo "🎉 [6/6] All systems go. Hetzner is synced, running, and healthy."
+echo "🎉 [6/6] Done! Hetzner is live, synced, running, and healthy."
