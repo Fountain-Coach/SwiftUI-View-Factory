@@ -1,0 +1,18 @@
+name: Test Hetzner Runner
+
+on:
+  push:
+    paths:
+      - ".github/workflows/runner-check.yml"
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, hetzner]
+    steps:
+      - name: Check environment
+        run: |
+          echo "Runner hostname: $(hostname)"
+          uname -a
+          docker version
+          docker compose version
