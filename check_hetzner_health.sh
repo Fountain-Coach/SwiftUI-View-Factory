@@ -1,16 +1,26 @@
 #!/bin/bash
 set -euo pipefail
 
-: "${HETZNER_IP:?You must set HETZNER_IP in environment or secrets}"
-SERVICE_URL="http://${HETZNER_IP}:8000/health"
+# === 🧩 Configuration ===
+: "${HETZNER_PORT:=8000}"
+: "${HETZNER_HEALTH_PATH:=/health}"
 MAX_RETRIES=10
 WAIT_SECONDS=2
+# ========================
 
-echo "🩺 Checking Hetzner health at $SERVICE_URL..."
+# === 🌐 Resolve HETZNER_IP ===
+if [[ -z "${HETZNER_IP:-}" ]]; then
+  echo "⚠️  Environment variable HETZNER_IP not set."
+  read -rp "👉 Please enter your Hetzner IP: " HETZNER_IP
+fi
 
+SERVICE_URL="http://${HETZNER_IP}:${HETZNER_PORT}${HETZNER_HEALTH_PATH}"
+echo "🩺 Checking Hetzner health at: $SERVICE_URL"
+
+# === ⏱️ Wait for service to come online ===
 for i in $(seq 1 $MAX_RETRIES); do
   if curl -sSf "$SERVICE_URL" > /dev/null; then
-    echo "✅ Hetzner service is up and responding."
+    echo "✅ Hetzner service is UP and responding at $SERVICE_URL"
     exit 0
   else
     echo "⏳ Waiting... ($i/$MAX_RETRIES)"
@@ -18,5 +28,6 @@ for i in $(seq 1 $MAX_RETRIES); do
   fi
 done
 
-echo "❌ ERROR: Hetzner service did not respond in time."
+# === ❌ Fail if unreachable ===
+echo "❌ ERROR: Hetzner service did not respond after $MAX_RETRIES attempts."
 exit 1
