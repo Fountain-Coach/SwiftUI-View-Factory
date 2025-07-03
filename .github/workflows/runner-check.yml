@@ -1,16 +1,22 @@
-name: Test Hetzner Runner
+name: Runner Check
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/runner-check.yml"
 
 jobs:
   test-runner:
     runs-on:
       - self-hosted
-      - Linux
-      - ARM64
+      - linux
+      - aarch64
     steps:
-      - name: Show runner info
+      - name: ✅ Print runner environment
         run: |
-          echo "✅ Hostname: $(hostname)"
-          echo "✅ Runner is working fine"
+          echo "Runner name: $HOSTNAME"
+          echo "Architecture: $(uname -m)"
+          echo "Kernel: $(uname -srmo)"
+          docker version
+          docker compose version
