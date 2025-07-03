@@ -1,17 +1,16 @@
-name: Verify Hetzner Runner (FountainAI)
+name: Test Hetzner Runner
 
 on:
   workflow_dispatch:
 
 jobs:
   test-runner:
-    runs-on: self-hosted  # ✅ This matches your runner's actual label
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
     steps:
-      - name: Confirm Runner Identity
+      - name: ✅ Runner confirmed
         run: |
-          echo "🔥 Running on: $(hostname)"
-          echo "✅ Kernel: $(uname -a)"
-          echo "🛠 Docker version:"
-          docker version || echo "🚨 Docker NOT working"
-          echo "🧪 Docker Compose version:"
-          docker compose version || echo "🚨 Compose NOT working"
+          echo "Hostname: $(hostname)"
+          echo "Runner is alive and picked up this job."
