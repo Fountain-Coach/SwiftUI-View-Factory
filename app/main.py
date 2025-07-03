@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+import logging
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel, Field
@@ -11,6 +12,15 @@ import json
 import openai
 
 load_dotenv()
+
+LOG_DIR = Path(__file__).resolve().parents[1] / "ci-logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+logger = logging.getLogger("openai_logger")
+handler = logging.FileHandler(LOG_DIR / "openai.log")
+formatter = logging.Formatter("%(asctime)s %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 app = FastAPI(title="SwiftUI View Factory API")
 
@@ -86,6 +96,7 @@ async def interpret_layout(file: UploadFile = File(...)):
             response_format={"type": "json_object"},
         )
         log = response.model_dump_json()
+        logger.info(log)
         try:
             content = response.choices[0].message.content
             payload = json.loads(content)
@@ -135,6 +146,7 @@ async def generate_swiftui_view(data: GenerateRequest):
         ]
         response = openai.chat.completions.create(model="gpt-4o", messages=messages)
         log = response.model_dump_json()
+        logger.info(log)
         swift = response.choices[0].message.content.strip()
         return {"swift": swift, "log": log}
     swift = f'struct {name}: View {{\n    var body: some View {{\n        Text("Hello")\n    }}\n}}'
