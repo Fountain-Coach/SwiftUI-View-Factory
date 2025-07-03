@@ -1,14 +1,11 @@
 name: Test Hetzner Runner
 
 on:
-  push:
-    paths:
-      - ".github/workflows/runner-check.yml"
   workflow_dispatch:
 
 jobs:
   test-runner:
-    runs-on: [self-hosted, hetzner]
+    runs-on: self-hosted  # 👈 only the built-in label
     steps:
       - name: Check environment
         run: |
