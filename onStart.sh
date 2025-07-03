@@ -10,10 +10,11 @@ KEY_PATH="$HOME/.ssh/id_codex"
 KNOWN_HOSTS="$HOME/.ssh/known_hosts"
 # =========================
 
-# === 🔐 EXPORT ENV PERMANENTLY FOR ALL SHELLS ===
-echo "💾 Exporting HETZNER_IP to all future shells..."
+# === 🔐 EXPORT HETZNER_IP FOR ALL FUTURE SHELLS ===
+echo "💾 Exporting HETZNER_IP globally..."
 echo "export HETZNER_IP=$HETZNER_IP" >> ~/.bashrc
 echo "export HETZNER_IP=$HETZNER_IP" >> ~/.profile
+echo "export HETZNER_IP=$HETZNER_IP" >> ~/.zshrc 2>/dev/null || true
 export HETZNER_IP
 
 # === 🔑 Generate ephemeral SSH key ===
@@ -29,13 +30,13 @@ echo "🚪 [3/6] Copying public key to Hetzner authorized_keys..."
 ssh-copy-id -i "${KEY_PATH}.pub" "$HETZNER_USER@$HETZNER_IP"
 
 # === 🛰️ Connect to Hetzner & bootstrap the service ===
-echo "📡 [4/6] Connecting to Hetzner to prepare repo..."
+echo "📡 [4/6] Connecting to Hetzner and preparing project repo..."
 ssh -i "$KEY_PATH" "$HETZNER_USER@$HETZNER_IP" bash <<EOF
 set -e
 
 echo "📁 Checking project directory: $REMOTE_PATH"
 if [ ! -d "$REMOTE_PATH" ]; then
-  echo "🆕 Cloning repo from $REPO_URL"
+  echo "🆕 Cloning repository from $REPO_URL"
   git clone "$REPO_URL" "$REMOTE_PATH"
 else
   echo "🔄 Pulling latest updates from main..."
