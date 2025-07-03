@@ -1,15 +1,15 @@
-name: Test Hetzner Runner
+name: Verify Self-Hosted Runner
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-runner:
-    runs-on: self-hosted  # 👈 only the built-in label
+  verify:
+    runs-on: self-hosted
     steps:
-      - name: Check environment
+      - name: Check Environment
         run: |
-          echo "Runner hostname: $(hostname)"
+          echo "Runner: $(hostname)"
           uname -a
           docker version
           docker compose version
