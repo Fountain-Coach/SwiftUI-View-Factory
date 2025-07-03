@@ -10,7 +10,7 @@ jobs:
       - Linux
       - ARM64
     steps:
-      - name: ✅ Runner confirmed
+      - name: ✅ Runner picked up job
         run: |
-          echo "Hostname: $(hostname)"
-          echo "Runner is alive and picked up this job."
+          echo "✅ Hostname: $(hostname)"
+          echo "✅ Runner is working"
