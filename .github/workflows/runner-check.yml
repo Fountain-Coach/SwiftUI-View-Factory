@@ -5,11 +5,7 @@ on:
 
 jobs:
   test-runner:
-    runs-on:
-      group: Default
-      labels: [self-hosted]
-      name: fountainai-server
-
+    runs-on: self-hosted  # ✅ This matches your runner's actual label
     steps:
       - name: Confirm Runner Identity
         run: |
