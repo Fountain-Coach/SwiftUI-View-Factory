@@ -1,0 +1,15 @@
+name: Fresh Hetzner Runner Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-hetzner:
+    runs-on: [self-hosted, linux, aarch64]
+    steps:
+      - name: ✅ Show runner environment
+        run: |
+          echo "RUNNER: $HOSTNAME"
+          uname -a
+          docker --version
+          docker compose version
