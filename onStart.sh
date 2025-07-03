@@ -3,7 +3,6 @@ set -euo pipefail
 
 # === 🧩 CONFIGURATION ===
 : "${HETZNER_USER:=codex}"
-: "${HETZNER_IP:?❌ ERROR: You must set HETZNER_IP as a Codex secret}"
 : "${REMOTE_PATH:=/home/codex/SwiftUI-View-Factory}"
 : "${REPO_URL:=https://github.com/Fountain-Coach/SwiftUI-View-Factory.git}"
 : "${HETZNER_PORT:=8000}"
@@ -12,7 +11,12 @@ KEY_PATH="$HOME/.ssh/id_codex"
 KNOWN_HOSTS="$HOME/.ssh/known_hosts"
 MAX_RETRIES=10
 WAIT_SECONDS=2
-# =========================
+
+# === ✅ Check for HETZNER_IP safely (no crash) ===
+if [[ -z "${HETZNER_IP:-}" ]]; then
+  echo "❌ ERROR: HETZNER_IP is not set. You must define it as a Codex secret."
+  exit 1
+fi
 
 # === 🔐 EXPORT HETZNER_IP FOR ALL FUTURE SHELLS ===
 echo "💾 Exporting HETZNER_IP to shell profiles..."
@@ -36,8 +40,8 @@ ssh-keyscan -H "$HETZNER_IP" >> "$KNOWN_HOSTS" 2>/dev/null
 echo "🚪 [3/6] Copying public key to Hetzner authorized_keys..."
 ssh-copy-id -i "${KEY_PATH}.pub" "$HETZNER_USER@$HETZNER_IP"
 
-# === 🛰️ Connect to Hetzner & bootstrap the repo ===
-echo "📡 [4/6] Connecting to Hetzner to sync code..."
+# === 🛰️ Connect to Hetzner & sync code ===
+echo "📡 [4/6] Connecting to Hetzner to clone/pull repo..."
 ssh -i "$KEY_PATH" "$HETZNER_USER@$HETZNER_IP" bash <<EOF
 set -e
 
@@ -45,17 +49,17 @@ if [ ! -d "$REMOTE_PATH" ]; then
   echo "🆕 Cloning repository from $REPO_URL"
   git clone "$REPO_URL" "$REMOTE_PATH"
 else
-  echo "🔄 Pulling latest code..."
+  echo "🔄 Pulling latest updates from main..."
   cd "$REMOTE_PATH"
   git reset --hard
   git pull origin main
 fi
 
 cd "$REMOTE_PATH"
-echo "🐳 Starting Docker Compose..."
+echo "🐳 Running Docker Compose..."
 docker compose up -d --build
 
-echo "✅ Hetzner Docker environment is live."
+echo "✅ Hetzner remote environment is live."
 EOF
 
 # === 🩺 HEALTH CHECK (curl-based) ===
