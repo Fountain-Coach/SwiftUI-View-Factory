@@ -75,7 +75,7 @@ async def interpret_layout(file: UploadFile = File(...)):
                     },
                     {
                         "type": "image_url",
-                        "image_url": f"data:{file.content_type};base64,{b64}",
+                        "image_url": {"url": f"data:{file.content_type};base64,{b64}"},
                     },
                 ],
             },
