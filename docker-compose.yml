@@ -6,8 +6,12 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
       - "8000:8000"
+    volumes:
+      - ./ci-logs:/app/ci-logs
   test:
     build: .
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./ci-logs:/app/ci-logs
     command: pytest -vv
