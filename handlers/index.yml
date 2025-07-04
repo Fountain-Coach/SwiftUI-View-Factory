@@ -1,5 +1,5 @@
 deploy: handlers/deploy.sh
 backup: handlers/backup.py
-interpret: handlers/interpret.py
-generate: handlers/generate.py
-secret: handlers/secret.py
+interpretLayout: handlers/interpretLayout.py
+generateSwiftUIView: handlers/generateSwiftUIView.py
+getOpenAIKey: handlers/getOpenAIKey.py
