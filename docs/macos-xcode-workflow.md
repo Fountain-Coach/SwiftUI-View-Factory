@@ -59,3 +59,10 @@ The handler composes the appropriate `xcodebuild` command and writes
 
 Run the dispatcher on a Mac with Xcode installed to process such requests and
 commit the resulting build logs back to the repository.
+
+## `packageSwiftUIView` Handler
+
+Use this handler to convert loose `.swift` files into a Swift package that can
+be opened in Xcode. It runs `swift package init`, copies the specified files,
+and archives the directory to `<package_name>.package` in the log folder.
+

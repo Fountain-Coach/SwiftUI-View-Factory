@@ -113,3 +113,10 @@ All handlers require the OPENAI_API_KEY environment variable.
 Runs `xcodebuild` with parameters from the request. It must be executed on
 macOS with Xcode installed. Build output is saved to `xcodebuild.log` and the
 handler reports success or failure via `status.yml`.
+
+## `handlers/packageSwiftUIView.py`
+
+Prepares a Swift package from loose `.swift` files and archives it as
+`<package_name>.package`. The archive can then be built on macOS using the
+`buildSwiftProject` handler.
+
