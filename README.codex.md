@@ -68,3 +68,6 @@ See `docs/USAGE.md` for a step-by-step overview.
 - `docs/dispatcher_right.pdf` – Dispatcher checklist and design notes.
 - `docs/how-codex-acts-like-a-compiler.pdf` – Git-based orchestration model.
 - `docs/Is “How Codex Acts Like a Compiler” a Hard-Wired Demo or a Generic Repository Blueprint?.pdf` – Discussion of this repository pattern.
+
+- `docs/macos-xcode-workflow.md` – Handling Xcode builds on a macOS clone.
+- `docs/swift-package-handler.md` – Packaging generated SwiftUI files.
