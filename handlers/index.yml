@@ -1,0 +1,2 @@
+deploy: handlers/deploy.sh
+backup: handlers/backup.py

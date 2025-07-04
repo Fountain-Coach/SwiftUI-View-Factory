@@ -1,0 +1,9 @@
+repo:
+  purpose: infrastructure-orchestration
+  strategy: git-merge-execution
+codex:
+  deploy_trigger_path: requests/
+  deploy_output_path: logs/
+  mainline_branch: main
+  enforce_merge_before_execution: true
+  cleanup_after_success: true
