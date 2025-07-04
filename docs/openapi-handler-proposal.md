@@ -25,8 +25,8 @@ applies to any OpenAPI specification.
      URL from an environment variable.
 
 2. **Define request kinds**
-   - Add new kinds such as `interpret` and `generate` to `handlers/index.yml`.
-   - Each kind maps to a handler script (e.g., `handlers/interpret.py`).
+   - Add new kinds using the `operationId` from the OpenAPI spec as the handler name.
+   - For example, `interpretLayout` maps to `handlers/interpretLayout.py` and `generateSwiftUIView` maps to `handlers/generateSwiftUIView.py`.
 
 3. **Implement the handler scripts**
    - Parse the YAML file to extract parameters.
@@ -50,8 +50,8 @@ applies to any OpenAPI specification.
      name: HelloView
    ```
 
-   Dispatching this file triggers `handlers/generate.py` which calls the
-   `/factory/generate` endpoint and writes the resulting Swift code to the log.
+  Dispatching this file triggers `handlers/generateSwiftUIView.py` which calls the
+  `/factory/generate` endpoint and writes the resulting Swift code to the log.
 
 ## Generalizing to Other OpenAPIs
 
