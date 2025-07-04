@@ -19,8 +19,8 @@ applies to any OpenAPI specification.
 1. **Generate an API client**
    - Use an OpenAPI code generator (e.g., `openapi-python-client`) to create a
      typed client for `api/openapi.yml`.
-   - Commit the generated client under `handlers/client/` or vendor it with the
-     repository.
+   - Include the generated client in your repository or publish it as a
+     standalone package.
    - Alternatively, call the endpoints using `curl` or `requests` with the base
      URL from an environment variable.
 
