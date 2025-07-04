@@ -17,7 +17,8 @@ This repository follows the blueprint described in `STRUCTURE_PLAN.md`. The goal
 └── README.codex.md     # This file
 ```
 
-Only `api/` and `docs/` exist initially, but the other folders will be created as development continues.
+The repository contains all of the directories above. Empty folders include a
+`.gitkeep` placeholder so the structure is visible in Git.
 
 ## Request Contract
 
@@ -31,6 +32,10 @@ INBOX="requests"
 OUTBOX="logs"
 DONE="processed"
 ```
+
+The dispatcher and Codex behavior are configured through `codex.repo.yaml` at
+the repository root. Paths such as `requests/` and `logs/` can be adjusted
+there if needed.
 
 ## Dispatcher Overview
 
@@ -49,7 +54,7 @@ For more details, see `docs/dispatcher_right.pdf` and `docs/how-codex-acts-like-
 
 ## Usage
 
-1. Ensure the repository contains the directories above (create them with `.gitkeep` files if necessary).
+1. The directories above are present in Git with `.gitkeep` files. No setup is required.
 2. Run `scripts/dispatch.sh` on the execution host to process requests. The script should watch `requests/` and place logs in `logs/`.
 3. Codex writes request YAML files to `requests/` and later reads log files from `logs/`.
 4. Add new handlers under `handlers/` and update `handlers/index.yml` to register them.
