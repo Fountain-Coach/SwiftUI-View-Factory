@@ -1,2 +1,5 @@
 deploy: handlers/deploy.sh
 backup: handlers/backup.py
+interpret: handlers/interpret.py
+generate: handlers/generate.py
+secret: handlers/secret.py
