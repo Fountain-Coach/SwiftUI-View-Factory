@@ -3,3 +3,4 @@ backup: handlers/backup.py
 interpretLayoutV13: handlers/interpretLayoutV13.py
 generateSwiftUIView: handlers/generateSwiftUIView.py
 getOpenAIKey: handlers/getOpenAIKey.py
+processImageUploads: handlers/processImageUploads.py
