@@ -1,0 +1,225 @@
+openapi: 3.1.0
+info:
+  title: SwiftUI View Factory API
+  description: |
+    This version explicitly describes the service's reliance on the
+    OpenAI GPT-4o model for vision interpretation.
+
+    The API converts UI mockups or structured layout trees
+    into production-grade SwiftUI views. Only a curated subset of SwiftUI
+    components is supported.
+  version: 1.3.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.fountain.coach/v1
+    description: Production v1
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Factory
+    description: Convert mockups and layout trees into SwiftUI views
+
+paths:
+  /factory/interpret:
+    post:
+      summary: Interpret UI mockup image with GPT-4o
+      description: |
+        Upload a UI mock or sketch. The service sends the image to the
+        OpenAI GPT-4o model and returns a structured layout tree.
+      operationId: interpretLayoutV13
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                gpt_model:
+                  type: string
+                  default: gpt-4o
+                  description: OpenAI model name used for interpretation
+      responses:
+        '200':
+          description: Structured layout response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LayoutInterpretationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /factory/generate:
+    post:
+      summary: Generate SwiftUI view code
+      description: |
+        Converts a structured layout into a SwiftUI `View` struct with
+        optional backend wiring.
+      operationId: generateSwiftUIView
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                layout:
+                  $ref: '#/components/schemas/LayoutNode'
+                name:
+                  type: string
+                  description: Optional name for the generated SwiftUI view
+                style:
+                  type: object
+                  properties:
+                    indent:
+                      type: integer
+                      default: 2
+                    header_comment:
+                      type: boolean
+                      default: true
+                    font:
+                      type: string
+                      description: Font applied to Text and Button views
+                    color:
+                      type: string
+                      description: Foreground color name
+                    spacing:
+                      type: integer
+                      description: Spacing value for stacks
+                    bold:
+                      type: boolean
+                      description: Apply bold styling to Text and Button views
+                    italic:
+                      type: boolean
+                      description: Apply italic styling to Text and Button views
+                    padding:
+                      type: integer
+                      description: Padding value applied to leaf views
+                    background_color:
+                      type: string
+                      description: Background color name
+                    corner_radius:
+                      type: integer
+                      description: Corner radius for leaf views
+                backend_hooks:
+                  type: boolean
+                  default: false
+                  description: |
+                    If true, the generated SwiftUI view includes an `.onAppear`
+                    block where analytics or network logic can be invoked.
+      responses:
+        '200':
+          description: Generated SwiftUI view code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  swift:
+                    type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LayoutInterpretationResponse:
+      type: object
+      required:
+        - structured
+      properties:
+        structured:
+          $ref: '#/components/schemas/LayoutNode'
+        description:
+          type: string
+          description: Optional natural language summary
+        version:
+          type: string
+          example: "layout-v1"
+        log:
+          type: string
+          description: Raw communication log between the service and OpenAI
+    LayoutNode:
+      type: object
+      required:
+        - type
+      properties:
+        id:
+          type: string
+          description: A unique node identifier
+        role:
+          type: string
+          nullable: true
+        tag:
+          type: string
+          nullable: true
+        type:
+          type: string
+          description: SwiftUI component type
+          enum:
+            - VStack
+            - HStack
+            - Text
+            - Image
+            - Button
+            - Spacer
+            - ScrollView
+            - ZStack
+            - Conditional
+            - TextField
+            - Form
+            - List
+            - Section
+            - NavigationStack
+        text:
+          type: string
+          nullable: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+          description: >-
+            Child layout nodes rendered inside container views.
+        condition:
+          type: string
+          nullable: true
+        then:
+          $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+        else:
+          $ref: '#/components/schemas/LayoutNode'
+          nullable: true
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        detail:
+          type: string
+          nullable: true
+        log:
+          type: string
+          nullable: true
