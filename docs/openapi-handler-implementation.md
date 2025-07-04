@@ -120,3 +120,10 @@ Prepares a Swift package from loose `.swift` files and archives it as
 `<package_name>.package`. The archive can then be built on macOS using the
 `buildSwiftProject` handler.
 
+## `scripts/docker_dispatch.sh`
+
+Wraps the dispatcher in a Docker container. The script detects the repository
+root with `git rev-parse`, mounts it into a Python image and runs
+`scripts/dispatch.sh` there. Use this wrapper to ensure all Python handlers run
+with a consistent runtime across operating systems.
+
