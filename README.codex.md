@@ -11,6 +11,7 @@ This repository follows the blueprint described in `STRUCTURE_PLAN.md`. The goal
 ├── requests/           # Inbox for Codex-written request files
 ├── processed/          # Archive for handled requests
 ├── logs/               # Structured execution logs
+├── image-upload/       # Mockup images consumed by the factory
 ├── scripts/            # Dispatcher and helper scripts
 ├── handlers/           # Individual request handlers
 ├── codex.repo.yaml     # Orchestration contract
@@ -57,8 +58,9 @@ For more details, see `docs/dispatcher_right.pdf` and `docs/how-codex-acts-like-
 1. The directories above are present in Git with `.gitkeep` files. No setup is required.
 2. Run `scripts/dispatch.sh` on the execution host to process requests. The script should watch `requests/` and place logs in `logs/`.
 3. Codex writes request YAML files to `requests/` and later reads log files from `logs/`.
-4. Add new handlers under `handlers/` and update `handlers/index.yml` to register them.
-5. Adjust `codex.repo.yaml` if the orchestration paths or policies change.
+4. Place UI mockup images in `image-upload/` and create a request with `kind: processImageUploads` to interpret them.
+5. Add new handlers under `handlers/` and update `handlers/index.yml` to register them.
+6. Adjust `codex.repo.yaml` if the orchestration paths or policies change.
 See `docs/USAGE.md` for a step-by-step overview.
 
 ## References
