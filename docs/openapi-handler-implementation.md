@@ -107,3 +107,9 @@ with open(os.path.join(log_dir, 'getOpenAIKey_response.json'), 'w') as f:
 ```
 
 All handlers require the OPENAI_API_KEY environment variable.
+
+## `handlers/buildSwiftProject.py`
+
+Runs `xcodebuild` with parameters from the request. It must be executed on
+macOS with Xcode installed. Build output is saved to `xcodebuild.log` and the
+handler reports success or failure via `status.yml`.
