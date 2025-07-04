@@ -3,11 +3,7 @@ import os
 import sys
 import json
 import yaml
-
-from client.swift_ui_view_factory_api_client import Client
-from client.swift_ui_view_factory_api_client.models import GenerateSwiftUIViewBody
-from client.swift_ui_view_factory_api_client.api.factory import generate_swift_ui_view
-from client.swift_ui_view_factory_api_client.models.error_response import ErrorResponse
+import openai
 
 request_file = sys.argv[1]
 log_dir = sys.argv[2]
@@ -16,22 +12,33 @@ with open(request_file) as f:
     data = yaml.safe_load(f)
 
 spec = data.get('spec', {})
-
-base_url = os.getenv('API_BASE_URL', 'http://localhost:8000')
-client = Client(base_url=base_url)
+layout = spec.get('layout')
+name = spec.get('name', 'GeneratedView')
+style = spec.get('style', {})
+backend_hooks = spec.get('backend_hooks', False)
+model = spec.get('gpt_model', 'gpt-4o')
 
 response_file = os.path.join(log_dir, 'generateSwiftUIView_response.json')
 status_file = os.path.join(log_dir, 'status.yml')
 
 try:
-    body = GenerateSwiftUIViewBody.from_dict(spec)
-    resp = generate_swift_ui_view.sync(client=client, body=body)
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+    prompt_data = {
+        "layout": layout,
+        "name": name,
+        "style": style,
+        "backend_hooks": backend_hooks
+    }
+    messages = [
+        {"role": "system", "content": "Generate SwiftUI code from the provided layout JSON. Return only the code."},
+        {"role": "user", "content": json.dumps(prompt_data)}
+    ]
+    resp = openai.ChatCompletion.create(model=model, messages=messages)
+    swift_code = resp.choices[0].message.content.strip()
+    result = {"swift": swift_code, "log": json.dumps(resp, default=str)}
     with open(response_file, 'w') as f:
-        json.dump(resp.to_dict() if hasattr(resp, 'to_dict') else None, f, indent=2)
-    if resp is not None and not isinstance(resp, ErrorResponse):
-        status = 'success'
-    else:
-        status = 'failure'
+        json.dump(result, f, indent=2)
+    status = 'success'
 except Exception as e:
     with open(os.path.join(log_dir, 'error.log'), 'w') as f:
         f.write(str(e))
