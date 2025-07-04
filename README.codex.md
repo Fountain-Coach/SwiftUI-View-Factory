@@ -59,6 +59,7 @@ For more details, see `docs/dispatcher_right.pdf` and `docs/how-codex-acts-like-
 3. Codex writes request YAML files to `requests/` and later reads log files from `logs/`.
 4. Add new handlers under `handlers/` and update `handlers/index.yml` to register them.
 5. Adjust `codex.repo.yaml` if the orchestration paths or policies change.
+See `docs/USAGE.md` for a step-by-step overview.
 
 ## References
 
