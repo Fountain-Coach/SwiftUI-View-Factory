@@ -119,3 +119,4 @@ handler reports success or failure via `status.yml`.
 Prepares a Swift package from loose `.swift` files and archives it as
 `<package_name>.package`. The archive can then be built on macOS using the
 `buildSwiftProject` handler.
+

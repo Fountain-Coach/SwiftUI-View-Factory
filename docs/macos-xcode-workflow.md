@@ -65,3 +65,4 @@ commit the resulting build logs back to the repository.
 Use this handler to convert loose `.swift` files into a Swift package that can
 be opened in Xcode. It runs `swift package init`, copies the specified files,
 and archives the directory to `<package_name>.package` in the log folder.
+

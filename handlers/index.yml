@@ -4,6 +4,6 @@ interpretLayoutV13: handlers/interpretLayoutV13.py
 generateSwiftUIView: handlers/generateSwiftUIView.py
 getOpenAIKey: handlers/getOpenAIKey.py
 processImageUploads: handlers/processImageUploads.py
-
 buildSwiftProject: handlers/buildSwiftProject.py
 packageSwiftUIView: handlers/packageSwiftUIView.py
+
