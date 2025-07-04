@@ -1,9 +1,9 @@
-# Example: OpenAPI Handlers Using Direct HTTP Calls
+# Example: OpenAPI Handlers Using the OpenAI API
 
-This document demonstrates a concrete implementation of the
-[OpenAPI handler proposal](openapi-handler-proposal.md). Each handler
-invokes the SwiftUI View Factory API defined in `api/openapi.yml` using
-plain HTTP requests.
+This document demonstrates how the handler scripts implement the
+[OpenAPI handler proposal](openapi-handler-proposal.md). The latest
+handlers call the OpenAI API directly instead of routing through a
+controller service.
 
 ## Handler Registry
 
@@ -12,15 +12,15 @@ plain HTTP requests.
 ```yaml
 deploy: handlers/deploy.sh
 backup: handlers/backup.py
-interpretLayout: handlers/interpretLayout.py
+interpretLayoutV13: handlers/interpretLayoutV13.py
 generateSwiftUIView: handlers/generateSwiftUIView.py
 getOpenAIKey: handlers/getOpenAIKey.py
 ```
 
-## `handlers/interpretLayout.py`
+## `handlers/interpretLayoutV13.py`
 
-Uploads a mockup image to `/factory/interpret` and stores the JSON
-response in the log directory.
+Uploads a mockup image and uses the OpenAI vision model to return a
+structured layout tree.
 
 ```python
 #!/usr/bin/env python3
@@ -28,9 +28,8 @@ import os
 import sys
 import yaml
 import json
-from client.swift_ui_view_factory_api_client import Client
-from client.swift_ui_view_factory_api_client.models import InterpretLayoutBody, File
-from client.swift_ui_view_factory_api_client.api.factory import interpret_layout
+import base64
+import openai
 
 request_file = sys.argv[1]
 log_dir = sys.argv[2]
@@ -39,33 +38,34 @@ with open(request_file) as f:
     data = yaml.safe_load(f)
 
 file_path = data.get('spec', {}).get('file')
-
-client = Client(base_url=os.getenv('API_BASE_URL', 'http://localhost:8000'))
-
-response_file = os.path.join(log_dir, 'interpretLayout_response.json')
-status_file = os.path.join(log_dir, 'status.yml')
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 with open(file_path, 'rb') as fp:
-    body = InterpretLayoutBody(file=File(payload=fp, file_name=os.path.basename(file_path)))
-    resp = interpret_layout.sync(client=client, body=body)
+    encoded = base64.b64encode(fp.read()).decode('utf-8')
 
-with open(response_file, 'w') as f:
-    json.dump(resp.to_dict(), f, indent=2)
-with open(status_file, 'w') as f:
-    f.write('status: success\n')
+resp = openai.ChatCompletion.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "Return JSON with keys 'structured' and 'description'."},
+        {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{encoded}"}}]}
+    ],
+)
+
+with open(os.path.join(log_dir, 'interpretLayoutV13_response.json'), 'w') as f:
+    json.dump(json.loads(resp.choices[0].message.content), f, indent=2)
 ```
 
 ## `handlers/generateSwiftUIView.py`
 
-Posts a layout tree to `/factory/generate` and writes the resulting
-Swift code JSON to the logs.
+Generates SwiftUI code from a layout tree by invoking the OpenAI API.
 
 ```python
 #!/usr/bin/env python3
 import os
 import sys
 import yaml
-import requests
+import json
+import openai
 
 request_file = sys.argv[1]
 log_dir = sys.argv[2]
@@ -74,51 +74,36 @@ with open(request_file) as f:
     data = yaml.safe_load(f)
 
 spec = data.get('spec', {})
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
-client = Client(base_url=os.getenv('API_BASE_URL', 'http://localhost:8000'))
+resp = openai.ChatCompletion.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "Produce SwiftUI code for this layout."},
+        {"role": "user", "content": json.dumps(spec)}
+    ],
+)
 
-response_file = os.path.join(log_dir, 'generateSwiftUIView_response.json')
-status_file = os.path.join(log_dir, 'status.yml')
-
-body = GenerateSwiftUIViewBody.from_dict(spec)
-resp = generate_swift_ui_view.sync(client=client, body=body)
-
-with open(response_file, 'w') as f:
-    json.dump(resp.to_dict(), f, indent=2)
-with open(status_file, 'w') as f:
-    f.write('status: success\n')
+with open(os.path.join(log_dir, 'generateSwiftUIView_response.json'), 'w') as f:
+    json.dump({"swift": resp.choices[0].message.content}, f, indent=2)
 ```
 
 ## `handlers/getOpenAIKey.py`
 
-Calls `/secret` to retrieve the API key. The response body is saved in
-the log directory.
+Returns the API key from the environment and saves it to the log
+directory.
 
 ```python
 #!/usr/bin/env python3
 import os
 import sys
 import json
-from client.swift_ui_view_factory_api_client import Client
-from client.swift_ui_view_factory_api_client.api.secrets import get_open_ai_key
 
 request_file = sys.argv[1]
 log_dir = sys.argv[2]
 
-client = Client(base_url=os.getenv('API_BASE_URL', 'http://localhost:8000'))
-
-response_file = os.path.join(log_dir, 'getOpenAIKey_response.json')
-status_file = os.path.join(log_dir, 'status.yml')
-
-resp = get_open_ai_key.sync(client=client)
-
-with open(response_file, 'w') as f:
-    json.dump(resp.to_dict(), f, indent=2)
-with open(status_file, 'w') as f:
-    f.write('status: success\n')
+with open(os.path.join(log_dir, 'getOpenAIKey_response.json'), 'w') as f:
+    json.dump({"api_key": os.getenv('OPENAI_API_KEY')}, f, indent=2)
 ```
 
-All handlers rely on the `API_BASE_URL` environment variable. If it is
-not set, they default to `http://localhost:8000` as defined in the
-OpenAPI spec.
-
+All handlers require the OPENAI_API_KEY environment variable.
