@@ -4,6 +4,8 @@ This repository is a practical blueprint for running Codex-managed tasks on your
 
 The factory exposes endpoints defined in [`api/openapi.yml`](api/openapi.yml). Handlers under `handlers/` call these endpoints or speak directly to OpenAI based on request files committed to `requests/`. The dispatcher script processes those files and saves results to `logs/` before archiving them in `processed/`.
 
+Users express tasks in natural language. Codex interprets those instructions and writes a YAML request file under `requests/`. Placing this file signals the dispatcher to compile or execute the requested action and later provide logs under `logs/` for review.
+
 While the example API focuses on SwiftUI generation, the workflow is not limited to Swift. You can adapt the same dispatcher and handler pattern to automate other domains by supplying a different OpenAPI spec and implementing matching handlers.
 
 ## Repository Layout
@@ -24,11 +26,15 @@ While the example API focuses on SwiftUI generation, the workflow is not limited
 
 ## Using the Workflow
 
-1. Place a request file under `requests/` describing a handler `kind` and parameters.
+1. When a human instructs Codex to perform work, Codex writes a request file under `requests/` describing a handler `kind` and parameters.
 2. Run `scripts/dispatch.sh` (or `scripts/docker_dispatch.sh` for a containerized runtime). Each request is routed to the appropriate handler and logged under `logs/`.
 3. Review the log output and status files committed back to the repository.
 
 Detailed instructions and examples are available in the [usage guide](docs/USAGE.md). The [OpenAPI handler proposal](docs/openapi-handler-proposal.md) and [implementation notes](docs/openapi-handler-implementation.md) explain how handlers use the API spec. For running the dispatcher continuously or inside Docker, see [daemonizing-dispatcher](docs/daemonizing-dispatcher.md) and [docker-runtime](docs/docker-runtime.md).
+
+## Human and Codex Roles
+
+This workflow keeps a human in the loop. A person initiates work by describing a desired outcome. Codex interprets that intent and places a request file in `requests/`. The dispatcher treats this file as the authoritative instruction to compile or run the appropriate handler. Execution logs appear in `logs/` so the human can confirm the result.
 
 ## Why a Generalized Tool?
 
