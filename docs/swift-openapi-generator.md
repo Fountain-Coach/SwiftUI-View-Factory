@@ -30,3 +30,24 @@ The build output is saved to `build.log` and `status.yml` indicates `success` or
 `failure`. The resulting package can be compiled on macOS or Linux where the
 plugin resolves the OpenAPI document during the build.
 
+## Handler: `packageAPIClient`
+
+`packageAPIClient.py` builds a Swift package that bundles all OpenAPI
+specifications under `api/` (and any additional directory passed via
+`openapi_dir`) along with generated SwiftUI code. Each OpenAPI document becomes
+its own target, and the SwiftUI files are placed in a separate target named by
+`module_name`.
+
+Example request:
+
+```yaml
+kind: packageAPIClient
+spec:
+  package_name: APIClient
+  swiftui_files:
+    - Logs/abc123/GeneratedView.swift
+```
+
+The resulting `<package_name>.package` archive includes the OpenAPI clients and
+the provided SwiftUI sources so it can be opened directly in Xcode.
+

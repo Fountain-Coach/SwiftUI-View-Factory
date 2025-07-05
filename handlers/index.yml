@@ -7,4 +7,5 @@ processImageUploads: handlers/processImageUploads.py
 buildSwiftProject: handlers/buildSwiftProject.py
 packageSwiftUIView: handlers/packageSwiftUIView.py
 generateSwiftClient: handlers/generateSwiftClient.py
+packageAPIClient: handlers/packageAPIClient.py
 
