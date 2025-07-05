@@ -72,4 +72,6 @@ See `docs/USAGE.md` for a step-by-step overview.
 - `docs/macos-xcode-workflow.md` – Handling Xcode builds on a macOS clone.
 - `docs/swift-package-handler.md` – Packaging generated SwiftUI files.
 - `docs/docker-runtime.md` – Running the factory in a Docker container.
+- `docs/swift-openapi-generator.md` – Generating client packages with the
+  Swift OpenAPI Generator plugin.
 

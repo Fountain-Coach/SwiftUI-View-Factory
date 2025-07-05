@@ -8,29 +8,25 @@ This repository can generate Swift client libraries from the API description
 - A macOS or Linux machine with the Swift toolchain installed
 - The `swift-openapi-generator` package checked out or accessible via SwiftPM
 
-## Handler Idea: `generateSwiftClient`
+## Handler: `generateSwiftClient`
 
-Add a new handler that invokes `swift-openapi-generator` and archives the
-resulting Swift package. A minimal shell script might look like:
+The repository includes a Python handler `generateSwiftClient.py` that prepares
+a Swift package using the `swift-openapi-generator` plugin. The handler copies
+`api/openapi.yml` into the target's source directory, writes a `Package.swift`
+with the required dependencies and plugin, runs `swift build` for immediate
+compiler feedback, and finally archives the directory as `<package_name>.package`.
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-request_file="$1"
-log_dir="$2"
+Example request:
 
-spec="api/openapi.yml"
-output_dir="$log_dir/Client"
-
-mkdir -p "$output_dir"
-
-swift run swift-openapi-generator generate "$spec" \
-  --output-directory "$output_dir"
-
-zip -r "$log_dir/SwiftClient.zip" "$output_dir"
+```yaml
+kind: generateSwiftClient
+spec:
+  package_name: HelloClient
+  module_name: HelloClient
+  generator_version: 1.6.0
 ```
 
-Register the handler in `handlers/index.yml` under a new kind such as
-`generateSwiftClient`. Dispatching a request with that kind produces a zipped
-client library ready for Xcode or further packaging.
+The build output is saved to `build.log` and `status.yml` indicates `success` or
+`failure`. The resulting package can be compiled on macOS or Linux where the
+plugin resolves the OpenAPI document during the build.
 
