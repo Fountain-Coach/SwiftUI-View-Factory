@@ -4,6 +4,8 @@ This repository is a practical blueprint for running Codex-managed tasks on your
 
 The factory exposes endpoints defined in [`api/openapi.yml`](api/openapi.yml). Handlers under `handlers/` call these endpoints or speak directly to OpenAI based on request files committed to `requests/`. The dispatcher script processes those files and saves results to `logs/` before archiving them in `processed/`.
 
+Users express tasks in natural language. Codex interprets those instructions and drafts a YAML request file under `requests/`. Once that file is reviewed and merged to the `main` branch, the dispatcher sees the new request, executes the specified handler, and stores logs under `logs/` for review.
+
 While the example API focuses on SwiftUI generation, the workflow is not limited to Swift. You can adapt the same dispatcher and handler pattern to automate other domains by supplying a different OpenAPI spec and implementing matching handlers.
 
 ## Repository Layout
@@ -24,11 +26,16 @@ While the example API focuses on SwiftUI generation, the workflow is not limited
 
 ## Using the Workflow
 
-1. Place a request file under `requests/` describing a handler `kind` and parameters.
-2. Run `scripts/dispatch.sh` (or `scripts/docker_dispatch.sh` for a containerized runtime). Each request is routed to the appropriate handler and logged under `logs/`.
-3. Review the log output and status files committed back to the repository.
+1. A human instructs Codex to perform work. Codex writes a request file under `requests/` describing a handler `kind` and parameters.
+2. After the request file is reviewed, merge it to the `main` branch. This merge is the trigger that lets the dispatcher process the request.
+3. Run `scripts/dispatch.sh` (or `scripts/docker_dispatch.sh` for a containerized runtime) on the execution host. The dispatcher routes each merged request to the appropriate handler and logs output under `logs/`.
+4. Review the log output and status files committed back to the repository.
 
 Detailed instructions and examples are available in the [usage guide](docs/USAGE.md). The [OpenAPI handler proposal](docs/openapi-handler-proposal.md) and [implementation notes](docs/openapi-handler-implementation.md) explain how handlers use the API spec. For running the dispatcher continuously or inside Docker, see [daemonizing-dispatcher](docs/daemonizing-dispatcher.md) and [docker-runtime](docs/docker-runtime.md).
+
+## Human and Codex Roles
+
+This workflow keeps a human in the loop. A person initiates work by describing a desired outcome and reviewing the request file Codex places in `requests/`. Once that file is merged to `main`, the dispatcher treats it as the authoritative instruction to run the appropriate handler. Execution logs appear in `logs/` so the human can confirm the result.
 
 ## Why a Generalized Tool?
 
