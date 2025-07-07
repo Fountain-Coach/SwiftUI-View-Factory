@@ -1,0 +1,3 @@
+kind: deploy
+spec:
+  target: test
